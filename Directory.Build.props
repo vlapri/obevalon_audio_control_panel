@@ -1,0 +1,29 @@
+<Project>
+  <!-- Common properties for all projects. -->
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <TreatWarningsAsErrors Condition="'$(Configuration)' == 'Release'">true</TreatWarningsAsErrors>
+    <Deterministic>true</Deterministic>
+    <!-- PDBs embedded in the assemblies: single-file publish produces just the exe. -->
+    <DebugType>embedded</DebugType>
+
+    <!-- Windows projects can be built (not run) on Linux/macOS, e.g. in cloud containers. -->
+    <EnableWindowsTargeting Condition="'$(OS)' != 'Windows_NT'">true</EnableWindowsTargeting>
+
+    <!-- Version comes from the git tag in the release workflow (-p:Version=X.Y.Z). -->
+    <Version Condition="'$(Version)' == ''">0.0.0-dev</Version>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+
+    <Product>Obevalon Audio Control Panel</Product>
+    <Authors>Obevalon</Authors>
+    <Company>Obevalon</Company>
+    <Copyright>Copyright © Obevalon</Copyright>
+    <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/vlapri/obevalon_audio_control_panel</RepositoryUrl>
+    <NeutralLanguage>en</NeutralLanguage>
+  </PropertyGroup>
+</Project>

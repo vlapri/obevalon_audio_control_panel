@@ -17,8 +17,26 @@ from a compact window, from the system tray or with global hotkeys.
 - Automatic update check; updates are installed only after you confirm them
 
 ### Requirements
-- Windows 10 or Windows 11 (x64 or ARM64)
+- Windows 11 or Windows 10 version 1809 and later (x64 or ARM64)
 - [.NET 10 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/10.0)
+
+### Download
+Ready-to-use builds are on the [Releases](https://github.com/vlapri/obevalon_audio_control_panel/releases) page.
+
+### Building from source
+Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0).
+
+```bash
+dotnet build -c Release
+```
+
+```bash
+dotnet test
+```
+
+```bash
+dotnet publish src/Obevalon.AudioControlPanel -c Release -r win-x64 -p:PublishSingleFile=true
+```
 
 ### Privacy
 The only network request the application makes is the update check, which downloads
@@ -48,8 +66,12 @@ Ovládá se z kompaktního okna, ze systémové lišty nebo globálními kláves
 - Automatická kontrola aktualizací; instalace proběhne až po vašem potvrzení
 
 ### Požadavky
-- Windows 10 nebo Windows 11 (x64 nebo ARM64)
+- Windows 11 nebo Windows 10 od verze 1809 (x64 nebo ARM64)
 - [.NET 10 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/10.0)
+
+### Stažení
+Hotové sestavení najdete na stránce [Releases](https://github.com/vlapri/obevalon_audio_control_panel/releases).
+Postup sestavení ze zdrojových kódů je v anglické části výše.
 
 ### Soukromí
 Jediný síťový požadavek aplikace je kontrola aktualizací: stažení manifestu z GitHub Releases

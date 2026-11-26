@@ -1,0 +1,30 @@
+# Build output
+bin/
+obj/
+out/
+artifacts/
+publish/
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.DotSettings.user
+
+# Test results
+TestResults/
+*.trx
+coverage*/
+
+# Runtime files of the portable app during local testing
+settings.ini
+settings.ini.tmp
+logs/
+*.exe.old
+
+# Never commit signing keys
+*.pem
+*.key
+*.pfx

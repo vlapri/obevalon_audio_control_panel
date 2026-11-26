@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Platform-independent logic. Must not reference anything Windows-specific. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>Obevalon.AudioControlPanel.Core</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Obevalon.AudioControlPanel.Core.Tests" />
+  </ItemGroup>
+
+</Project>

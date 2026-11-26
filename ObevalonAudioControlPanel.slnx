@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Obevalon.AudioControlPanel.Core/Obevalon.AudioControlPanel.Core.csproj" />
+    <Project Path="src/Obevalon.AudioControlPanel.Platform/Obevalon.AudioControlPanel.Platform.csproj" />
+    <Project Path="src/Obevalon.AudioControlPanel/Obevalon.AudioControlPanel.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Obevalon.AudioControlPanel.Core.Tests/Obevalon.AudioControlPanel.Core.Tests.csproj" />
+  </Folder>
+</Solution>
