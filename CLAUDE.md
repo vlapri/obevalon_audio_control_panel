@@ -26,7 +26,7 @@ starting any work. If a requirement changes, update SPEC.md first, then the code
 - Core Audio via our own thin source-generated COM interop (`[GeneratedComInterface]`),
   including the undocumented `IPolicyConfig`. No NAudio.
 - Unit tests: xUnit.
-- Distribution: framework-dependent **single-file** exe (`ObevalonAudioControlPanel.exe`),
+- Distribution: framework-dependent **single-file** exe (`OACP.exe`),
   `win-x64` and `win-arm64`.
 
 ## Hard rules
@@ -47,8 +47,7 @@ starting any work. If a requirement changes, update SPEC.md first, then the code
    change requires bumping `SettingsVersion` and adding a migration.
 6. Core Audio callbacks arrive on background threads. Marshal them to the UI via the `Dispatcher`.
    Never call back into Core Audio from inside an `IMMNotificationClient` callback.
-7. Each source file starts with `// SPDX-License-Identifier: GPL-3.0-or-later`
-   (pending decision Q1 in SPEC.md).
+7. Each source file starts with `// SPDX-License-Identifier: GPL-3.0-or-later`.
 
 ## Code style
 

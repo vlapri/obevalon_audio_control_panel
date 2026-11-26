@@ -29,10 +29,13 @@ klávesovými zkratkami.
 | D9 | Hlasitost | Aplikace ovládá **jen hlasitost mikrofonu**, ne hlasitost výstupu. |
 | D10 | Vzhled | Kompaktní okno, motiv **auto (podle systému) / světlý / tmavý**. |
 | D11 | Licence | **GNU GPL v3**. Všechny závislosti musí mít licenci kompatibilní s GPL v3 (MIT, Apache 2.0, BSD…). |
-| D12 | OS | Windows 10 (1809+) a Windows 11, x64 a ARM64. |
+| D12 | OS | Windows 11 (primárně) a Windows 10 od verze 1809 (build 17763), x64 a ARM64. Testuje se na Windows 11 a Windows 10 22H2. |
 | D13 | CI/CD | **GitHub Actions** – build a testy na každý push/PR, vydání do **GitHub Releases** po pushnutí tagu `vX.Y.Z`. |
 | D14 | Nastavení | `settings.ini` ve složce, odkud je spuštěn `.exe` (portable). |
 | D15 | Aktualizace | Automatická kontrola nové verze, **upozornění uživatele** a po jeho souhlasu automatické stažení, ověření a instalace. Zdrojem jsou **GitHub Releases** (manifest `update.json` jako asset vydání), bez vlastního serveru. Detail v kap. 3.9 a 5.5. |
+| D16 | Výstupní soubor | `OACP.exe` |
+| D17 | Licence v hlavičkách | `// SPDX-License-Identifier: GPL-3.0-or-later` |
+| D18 | Ikona | Vlastní návrh: reproduktor se zvukovými vlnami a šipkami přepnutí, varianta pro ztlumený mikrofon do systray. Zdroj je SVG v `src/Obevalon.AudioControlPanel/Assets/`. |
 
 ## 3. Funkční specifikace
 
@@ -207,7 +210,7 @@ při načtení se nastavení převede (migrace) a uloží s novým číslem verz
   platný **digitální podpis** (viz 5.5). Pokud ověření selže, aktualizace se neprovede,
   soubor se smaže a zobrazí se chyba.
 - **F9.7 Instalace bez admin práv a bez samostatného updateru:**
-  1. Běžící exe se přejmenuje na `ObevalonAudioControlPanel.exe.old`. Windows dovoluje
+  1. Běžící exe se přejmenuje na `OACP.exe.old`. Windows dovoluje
      přejmenovat běžící exe, přepsat ho ne.
   2. Nový exe se přesune na původní místo.
   3. Spustí se nový exe s parametry `--updated --wait-pid <PID>` a stará instance se ukončí.
@@ -225,7 +228,7 @@ při načtení se nastavení převede (migrace) a uloží s novým číslem verz
 - **F9.10 Nastavení se při aktualizaci nemění.** `settings.ini` zůstává, případnou migraci
   formátu provede nová verze (viz 3.8).
 - **F9.11 Soukromí:** kontrola je obyčejný HTTPS požadavek na GitHub, bez telemetrie
-  a bez identifikátorů uživatele. User-Agent je `ObevalonAudioControlPanel/<verze>`.
+  a bez identifikátorů uživatele. User-Agent je `OACP/<verze>`.
   Uvést v README.
 - **F9.12 Chyby sítě** při automatické kontrole se nezobrazují, jen se zalogují. Další pokus
   proběhne při příští plánované kontrole. Při ruční kontrole se chyba zobrazí.
@@ -315,7 +318,7 @@ s nastavením, INI), je v `Core`. Na Linuxu i v CI tak běží jednotkové testy
 1. Zpracovat parametry (`--tray`, `--log`, `--updated`, `--wait-pid <PID>`).
    S `--wait-pid` počkat na ukončení staré instance (timeout ~10 s).
 2. Zkontrolovat jedinou instanci (pokud už běží → signál „zobraz okno“ a konec).
-   Smazat případný `ObevalonAudioControlPanel.exe.old`.
+   Smazat případný `OACP.exe.old`.
 3. Načíst `settings.ini` (nebo výchozí hodnoty).
 4. Aplikovat jazyk a motiv.
 5. Inicializovat audio služby, mikrofon a zkratky.
@@ -347,8 +350,8 @@ Přechod na GitHub Pages je možný později beze změny formátu manifestu, zm�
   "releaseNotesUrl": "https://github.com/vlapri/obevalon_audio_control_panel/releases/tag/v1.2.0",
   "minimumRuntime": "10.0.0",
   "assets": {
-    "win-x64":   { "url": "https://github.com/.../releases/download/v1.2.0/ObevalonAudioControlPanel-1.2.0-win-x64.exe",   "sha256": "…", "size": 1234567 },
-    "win-arm64": { "url": "https://github.com/.../releases/download/v1.2.0/ObevalonAudioControlPanel-1.2.0-win-arm64.exe", "sha256": "…", "size": 1234567 }
+    "win-x64":   { "url": "https://github.com/.../releases/download/v1.2.0/OACP-1.2.0-win-x64.exe",   "sha256": "…", "size": 1234567 },
+    "win-arm64": { "url": "https://github.com/.../releases/download/v1.2.0/OACP-1.2.0-win-arm64.exe", "sha256": "…", "size": 1234567 }
   }
 }
 ```
@@ -460,7 +463,7 @@ obevalon_audio_control_panel/
 └─ README.md                                   # EN + CZ, screenshoty, stažení, použití
 ```
 
-Výstupní soubor: **`ObevalonAudioControlPanel.exe`**.
+Výstupní soubor: **`OACP.exe`** (zkratka Obevalon Audio Control Panel). Název aplikace v UI, v registru a v oknech zůstává „Obevalon Audio Control Panel“.
 
 ## 7. Build a vydání (GitHub Actions)
 
@@ -478,8 +481,8 @@ Výstupní soubor: **`ObevalonAudioControlPanel.exe`**.
     -p:Version=<verze z tagu> -o out/<rid>
   ```
 - Assety vydání:
-  - `ObevalonAudioControlPanel-<verze>-<rid>.zip` (exe + LICENSE + README) – pro ruční stažení,
-  - `ObevalonAudioControlPanel-<verze>-<rid>.exe` – samotný exe pro x64 i ARM64 (stahuje ho aktualizace),
+  - `OACP-<verze>-<rid>.zip` (exe + LICENSE + README) – pro ruční stažení,
+  - `OACP-<verze>-<rid>.exe` – samotný exe pro x64 i ARM64 (stahuje ho aktualizace),
   - `SHA256SUMS.txt`,
   - `update.json` + `update.json.sig` – manifest aktualizace a jeho podpis (kap. 5.5).
 - Podpis vytvoří skript `build/make-update-manifest.ps1` s klíčem ze secretu
@@ -519,8 +522,7 @@ Výstupní soubor: **`ObevalonAudioControlPanel.exe`**.
 - Veškeré P/Invoke a COM jen v projektu `Platform`. `Core` nesmí referencovat nic Windows-specifického.
 - Žádná nová NuGet závislost bez odsouhlasení; musí mít licenci kompatibilní s GPL v3.
 - Každý text v UI musí jít přes lokalizační zdroje (žádné natvrdo psané řetězce), vždy v CZ i EN.
-- Hlavička souborů s licencí: `// SPDX-License-Identifier: GPL-3.0-or-later`
-  *(nebo `GPL-3.0-only` – viz otevřená otázka Q1)*.
+- Hlavička souborů s licencí: `// SPDX-License-Identifier: GPL-3.0-or-later` (D17).
 
 ### 8.4 Testování
 - Jednotkové testy pro veškerou logiku v `Core` (INI, cyklus, řazení, slučování zařízení,
@@ -555,9 +557,9 @@ profily (výstup + mikrofon najednou), drag & drop řazení, beta kanál aktuali
 
 ## 10. Otevřené otázky
 
-- **Q1** Licence v hlavičkách souborů: `GPL-3.0-or-later` (umožní přechod na budoucí verze GPL),
-  nebo striktně `GPL-3.0-only`? *Návrh: `GPL-3.0-or-later`.*
-- **Q2** Ikona aplikace: vytvořit vlastní jednoduchou (reproduktor + šipky přepnutí),
-  nebo dodá autor?
-- **Q3** Minimální verze Windows 10: stačí 1809, nebo podporovat jen aktuálně podporované verze (22H2)?
-- **Q4** Interval automatické kontroly aktualizací: 24 h (návrh), nebo jen při startu aplikace?
+Momentálně žádné. Rozhodnuté otázky:
+
+- **Q1** Licence v hlavičkách souborů → `GPL-3.0-or-later` (D17).
+- **Q2** Ikona → vlastní návrh (D18).
+- **Q3** Minimální verze Windows 10 → 1809 (build 17763), testuje se na 22H2 (D12).
+- **Q4** Kontrola aktualizací → při startu a pak každých 24 h (F9.1).
