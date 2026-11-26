@@ -23,6 +23,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Obevalon.AudioControlPanel.Core\Obevalon.AudioControlPanel.Core.csproj" />
     <ProjectReference Include="..\Obevalon.AudioControlPanel.Platform\Obevalon.AudioControlPanel.Platform.csproj" />
   </ItemGroup>
