@@ -1,0 +1,72 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*.*.*']
+
+permissions:
+  contents: write
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Determine version from tag
+        id: version
+        shell: pwsh
+        run: |
+          $tag = '${{ github.ref_name }}'
+          $version = $tag.Substring(1)
+          if ($version -notmatch '^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$') { throw "Tag '$tag' is not a valid SemVer version (vX.Y.Z)." }
+          "version=$version" >> $env:GITHUB_OUTPUT
+          "prerelease=$(if ($version.Contains('-')) { 'true' } else { 'false' })" >> $env:GITHUB_OUTPUT
+
+      - name: Test
+        run: dotnet test -c Release
+
+      - name: Publish
+        shell: pwsh
+        run: |
+          $v = '${{ steps.version.outputs.version }}'
+          New-Item -ItemType Directory -Force dist | Out-Null
+          foreach ($rid in 'win-x64', 'win-arm64') {
+            dotnet publish src/Obevalon.AudioControlPanel -c Release -r $rid -p:PublishSingleFile=true -p:Version=$v -o "out/$rid"
+            if ($LASTEXITCODE -ne 0) { throw "Publish failed for $rid." }
+
+            # Plain exe (downloaded by the in-app updater) and a zip for manual download.
+            Copy-Item "out/$rid/OACP.exe" "dist/OACP-$v-$rid.exe"
+            $staging = "staging/$rid"
+            New-Item -ItemType Directory -Force $staging | Out-Null
+            Copy-Item "out/$rid/OACP.exe", LICENSE, README.md $staging
+            Compress-Archive -Path "$staging/*" -DestinationPath "dist/OACP-$v-$rid.zip"
+          }
+
+          Get-ChildItem dist -File |
+            ForEach-Object { '{0}  {1}' -f (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant(), $_.Name } |
+            Set-Content dist/SHA256SUMS.txt -Encoding ascii
+
+          # TODO(M8): generate and sign update.json (build/make-update-manifest.ps1, secret UPDATE_SIGNING_KEY).
+
+      - name: Create GitHub release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $ghArgs = @(
+            'release', 'create', '${{ github.ref_name }}',
+            '--title', 'Obevalon Audio Control Panel ${{ steps.version.outputs.version }}',
+            '--generate-notes', '--verify-tag')
+          if ('${{ steps.version.outputs.prerelease }}' -eq 'true') { $ghArgs += '--prerelease' }
+          $ghArgs += (Get-ChildItem dist -File).FullName
+          gh @ghArgs
+          if ($LASTEXITCODE -ne 0) { throw 'Creating the release failed.' }

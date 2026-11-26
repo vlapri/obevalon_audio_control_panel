@@ -1,0 +1,29 @@
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- Obevalon Audio Control Panel – application icon (used for 40 px and larger). -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2F80ED" />
+      <stop offset="1" stop-color="#7B3FE4" />
+    </linearGradient>
+  </defs>
+  <rect x="8" y="8" width="240" height="240" rx="56" fill="url(#bg)" />
+
+  <!-- Speaker -->
+  <path d="M42 100 h30 l44 -38 v132 l-44 -38 h-30 a8 8 0 0 1 -8 -8 v-40 a8 8 0 0 1 8 -8 z" fill="#FFFFFF" />
+
+  <!-- Sound waves -->
+  <g fill="none" stroke="#FFFFFF" stroke-width="15" stroke-linecap="round">
+    <path d="M144 98 A42 42 0 0 1 144 158" />
+    <path d="M168 72 A78 78 0 0 1 168 184" />
+  </g>
+
+  <!-- Switch badge -->
+  <circle cx="190" cy="190" r="48" fill="#FFFFFF" stroke="#6A46E6" stroke-width="8" />
+  <g fill="none" stroke="#5B3FD6" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M164 177 h46" />
+    <path d="M198 164 l13 13 l-13 13" />
+    <path d="M216 203 h-46" />
+    <path d="M182 190 l-13 13 l13 13" />
+  </g>
+</svg>

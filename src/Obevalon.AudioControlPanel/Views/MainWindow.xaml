@@ -1,0 +1,38 @@
+<Window x:Class="Obevalon.AudioControlPanel.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="clr-namespace:Obevalon.AudioControlPanel.Localization"
+        xmlns:core="clr-namespace:Obevalon.AudioControlPanel.Core;assembly=Obevalon.AudioControlPanel.Core"
+        Title="{x:Static core:AppInfo.ProductName}"
+        Icon="/Assets/app.ico"
+        Width="380"
+        SizeToContent="Height"
+        ResizeMode="CanMinimize"
+        WindowStartupLocation="CenterScreen"
+        UseLayoutRounding="True">
+  <StackPanel Margin="20">
+    <StackPanel Orientation="Horizontal">
+      <Image Source="/Assets/app.ico" Width="48" Height="48" RenderOptions.BitmapScalingMode="HighQuality" />
+      <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
+        <TextBlock Text="{x:Static core:AppInfo.ProductName}" FontSize="16" FontWeight="SemiBold" />
+        <TextBlock Opacity="0.75">
+          <Run Text="{loc:Loc Common_Version}" /><Run Text=" " /><Run Text="{x:Static core:AppInfo.Version}" />
+        </TextBlock>
+      </StackPanel>
+    </StackPanel>
+
+    <TextBlock Margin="0,16,0,0" TextWrapping="Wrap" Text="{loc:Loc MainWindow_WorkInProgress}" />
+
+    <TextBlock Margin="0,16,0,0" Opacity="0.75">
+      <Run Text="{loc:Loc Common_Author}" /><Run Text=": " /><Run Text="{x:Static core:AppInfo.Author}" />
+      <LineBreak />
+      <Run Text="{loc:Loc Common_License}" /><Run Text=": " /><Run Text="{x:Static core:AppInfo.LicenseName}" />
+    </TextBlock>
+
+    <TextBlock Margin="0,8,0,0">
+      <Hyperlink NavigateUri="{x:Static core:AppInfo.RepositoryUrl}" RequestNavigate="OnRequestNavigate">
+        <Run Text="{loc:Loc Common_Repository}" />
+      </Hyperlink>
+    </TextBlock>
+  </StackPanel>
+</Window>

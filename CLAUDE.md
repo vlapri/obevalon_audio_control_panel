@@ -66,12 +66,18 @@ dotnet test
 ```
 
 - This project is often developed in a **Linux cloud container**. The Windows projects
-  build there with `-p:EnableWindowsTargeting=true`, but the WPF app **cannot run** there.
-  Core tests (`net10.0`) run on Linux.
+  build there (`EnableWindowsTargeting` is set automatically in `Directory.Build.props`),
+  but the WPF app **cannot run** there. Core tests (`net10.0`) run on Linux.
+- If the container has no .NET SDK: `apt-get install -y dotnet-sdk-10.0`
+  (the `dot.net` install script host may be blocked by the network policy).
+- Icons: edit the SVG sources in `src/Obevalon.AudioControlPanel/Assets/`, then regenerate
+  the `.ico` files with `node build/render-icons.mjs` (needs Node with Playwright + Chromium) and commit both.
 - Audio, tray, hotkeys, autostart and the exe-swap update can only be verified on real
   Windows. Add any new manual checks to `docs/TESTING.md` and tell the author what to test.
-- Release-like local publish:
-  `dotnet publish src/Obevalon.AudioControlPanel -c Release -r win-x64 --self-contained false -p:PublishSingleFile=true`
+- Release-like local publish (framework-dependent is the project default):
+  `dotnet publish src/Obevalon.AudioControlPanel -c Release -r win-x64 -p:PublishSingleFile=true`
+- CI (`.github/workflows/build.yml`) uploads a test build `OACP.exe` as an artifact for every PR.
+  Point the author to it for manual testing.
 
 ## Git workflow
 

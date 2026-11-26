@@ -419,6 +419,7 @@ obevalon_audio_control_panel/
 │     ├─ build.yml                 # build + testy na push/PR
 │     └─ release.yml               # publish, update.json + podpis, GitHub Release na tag v*
 ├─ build/
+│  ├─ render-icons.mjs             # vyrenderování SVG ikon do .ico (Node + Playwright)
 │  └─ make-update-manifest.ps1     # generování a podepsání update.json v release workflow
 ├─ docs/
 │  ├─ SPEC.md                      # tento dokument
@@ -428,7 +429,7 @@ obevalon_audio_control_panel/
 │  ├─ Obevalon.AudioControlPanel/              # WPF aplikace (exe)
 │  │  ├─ App.xaml(.cs)
 │  │  ├─ app.manifest                          # asInvoker, PerMonitorV2, supportedOS Win10/11
-│  │  ├─ Assets/                               # app.ico, ikony tray (normal / mic muted), SVG zdroje
+│  │  ├─ Assets/                               # app.svg, tray.svg, tray-muted.svg (zdroje) + vygenerované .ico
 │  │  ├─ Localization/                         # Strings.resx, Strings.cs.resx, LocExtension
 │  │  ├─ Themes/                               # Light.xaml, Dark.xaml, Controls.xaml, ThemeManager
 │  │  ├─ Tray/                                 # TrayIconController, kontextové menu
@@ -453,6 +454,7 @@ obevalon_audio_control_panel/
 ├─ tests/
 │  └─ Obevalon.AudioControlPanel.Core.Tests/   # xUnit, net10.0
 ├─ .editorconfig
+├─ .gitattributes
 ├─ .gitignore
 ├─ Directory.Build.props                       # společné vlastnosti (verze, nullable, LangVersion, analyzéry)
 ├─ Directory.Packages.props                    # centrální správa verzí NuGet balíčků
@@ -534,9 +536,11 @@ Výstupní soubor: **`OACP.exe`** (zkratka Obevalon Audio Control Panel). Název
 
 ## 9. Plán práce (milníky)
 
+Stav: ✅ = hotovo.
+
 | Milník | Obsah | Výstup |
 |---|---|---|
-| **M0 – Kostra a CI** | Solution, 3 projekty + testy, `Directory.Build.props`, `global.json`, `.editorconfig`, `app.manifest`, prázdné okno, `build.yml` + `release.yml`, README | Tag `v0.1.0` vytvoří Release s (prázdným) exe – ověření celé pipeline |
+| **M0 – Kostra a CI** ✅ | Solution, 3 projekty + testy, `Directory.Build.props`, `global.json`, `.editorconfig`, `app.manifest`, prázdné okno, `build.yml` + `release.yml`, README | Tag `v0.1.0` vytvoří Release s (prázdným) exe – ověření celé pipeline |
 | **M1 – Core Audio** | COM interop, `AudioDeviceService` (výpis, výchozí, přepnutí včetně komunikační role, notifikace), `MicrophoneService` (hlasitost, mute, callback) | Funkční služby ověřené na reálném HW |
 | **M2 – Nastavení a logika** | `IniDocument`, `IniSettingsStore`, `SettingsPathResolver` (portable/APPDATA), `DeviceCatalog`, `CycleSelector`, řazení + jednotkové testy | Zelené testy |
 | **M3 – Hlavní okno** | Seznam výstupů (název, poznámka, stav, aktuální), editace názvu/poznámky, pořadí, „v cyklu“, „skrýt“, tlačítko „Další výstup“, sekce mikrofonu (posuvník, mute) | Použitelná aplikace z okna |

@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>Obevalon.AudioControlPanel</RootNamespace>
+    <AssemblyName>OACP</AssemblyName>
+    <AssemblyTitle>Obevalon Audio Control Panel</AssemblyTitle>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+
+    <!-- Framework-dependent; publish with -r win-x64|win-arm64 -p:PublishSingleFile=true -->
+    <SelfContained>false</SelfContained>
+    <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
+
+    <!-- Only Czech satellite resources (English is the neutral language). -->
+    <SatelliteResourceLanguages>cs</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\*.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Obevalon.AudioControlPanel.Core\Obevalon.AudioControlPanel.Core.csproj" />
+    <ProjectReference Include="..\Obevalon.AudioControlPanel.Platform\Obevalon.AudioControlPanel.Platform.csproj" />
+  </ItemGroup>
+
+</Project>
