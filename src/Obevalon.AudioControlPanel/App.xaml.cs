@@ -13,6 +13,7 @@ using Obevalon.AudioControlPanel.Localization;
 using Obevalon.AudioControlPanel.Platform.Autostart;
 using Obevalon.AudioControlPanel.Platform.CoreAudio;
 using Obevalon.AudioControlPanel.Platform.Shell;
+using Obevalon.AudioControlPanel.Themes;
 using Obevalon.AudioControlPanel.Tray;
 using Obevalon.AudioControlPanel.ViewModels;
 using Obevalon.AudioControlPanel.Views;
@@ -57,6 +58,7 @@ public partial class App : Application
 
         _settings = new SettingsManager(CreateSettingsStore());
         LocalizationManager.Instance.SetLanguage(_settings.Current.Language);
+        ThemeManager.Apply(_settings.Current.Theme);
 
         // Audio services post their notifications to the UI thread through this context.
         var uiContext = SynchronizationContext.Current ?? new DispatcherSynchronizationContext(Dispatcher);
@@ -128,7 +130,7 @@ public partial class App : Application
     /// <summary>Shows the settings window (one at a time).</summary>
     internal void ShowSettings()
     {
-        if (_autostart is null || _settings is null || _exiting)
+        if (_autostart is null || _settings is null || _audio is null || _microphone is null || _exiting)
         {
             return;
         }
@@ -139,7 +141,7 @@ public partial class App : Application
             return;
         }
 
-        _settingsWindow = new SettingsWindow { DataContext = new SettingsViewModel(_autostart, _settings) };
+        _settingsWindow = new SettingsWindow { DataContext = new SettingsViewModel(_autostart, _settings, _audio, _microphone) };
         if (_window is { IsVisible: true })
         {
             _settingsWindow.Owner = _window;
