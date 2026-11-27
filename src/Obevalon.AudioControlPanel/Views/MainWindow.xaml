@@ -34,7 +34,8 @@
     <ItemsControl ItemsSource="{Binding Outputs}" Focusable="False">
       <ItemsControl.ItemTemplate>
         <DataTemplate DataType="{x:Type vm:OutputDeviceViewModel}">
-          <Button Style="{StaticResource ListRowButton}" Command="{Binding SwitchCommand}" ToolTip="{Binding Name}">
+          <Button Style="{StaticResource ListRowButton}" Command="{Binding SwitchCommand}" ToolTip="{Binding SystemName}"
+                  ToolTipService.ShowOnDisabled="True">
             <Grid>
               <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="24" />
@@ -46,7 +47,9 @@
                          VerticalAlignment="Center" Visibility="Hidden" />
 
               <StackPanel Grid.Column="1">
-                <TextBlock x:Name="DeviceName" Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                <TextBlock x:Name="DeviceName" Text="{Binding DisplayName}" TextTrimming="CharacterEllipsis" />
+                <TextBlock Text="{Binding Note}" Style="{StaticResource SecondaryText}" TextTrimming="CharacterEllipsis"
+                           Visibility="{Binding HasNote, Converter={StaticResource BoolToVisibility}}" />
                 <TextBlock x:Name="Status" Style="{StaticResource SecondaryText}" Visibility="Collapsed" />
               </StackPanel>
             </Grid>
@@ -67,6 +70,11 @@
               <Setter TargetName="DeviceName" Property="Opacity" Value="0.5" />
               <Setter TargetName="Status" Property="Visibility" Value="Visible" />
               <Setter TargetName="Status" Property="Text" Value="{loc:Loc DeviceState_Unplugged}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding IsMissing}" Value="True">
+              <Setter TargetName="DeviceName" Property="Opacity" Value="0.5" />
+              <Setter TargetName="Status" Property="Visibility" Value="Visible" />
+              <Setter TargetName="Status" Property="Text" Value="{loc:Loc DeviceState_Missing}" />
             </DataTrigger>
             <DataTrigger Binding="{Binding State}" Value="{x:Static audio:AudioDeviceState.NotPresent}">
               <Setter TargetName="DeviceName" Property="Opacity" Value="0.5" />

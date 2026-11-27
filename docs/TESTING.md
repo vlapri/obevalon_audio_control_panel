@@ -45,3 +45,14 @@ Pro přehrávání zvuku během testu stačí třeba video na YouTube.
 ### Stabilita
 - [ ] Po mnoha přepnutích a změnách hlasitosti aplikace běží bez chyb.
 - [ ] Po zavření okna nezůstane proces `OACP.exe` ve Správci úloh.
+
+## M2 – Nastavení
+- [ ] Po prvním spuštění vznikne `settings.ini` vedle `OACP.exe` a obsahuje sekci `[Output:…]` pro každý výstup.
+- [ ] Když je `OACP.exe` ve složce bez práva zápisu (např. `C:\Program Files\OACP\`), nastavení se uloží do `%APPDATA%\Obevalon\AudioControlPanel\settings.ini` a aplikace nehlásí chybu.
+- [ ] Ruční úprava `settings.ini` (při vypnuté aplikaci) se po spuštění projeví:
+  - `Name=` a `Note=` u výstupu změní zobrazený název a poznámku,
+  - změna `Order=` změní pořadí,
+  - `Hidden=true` výstup skryje,
+  - `Language=en` / `Language=cs` přepne jazyk.
+- [ ] Poškozený nebo nesmyslný `settings.ini` nezpůsobí pád; použijí se výchozí hodnoty.
+- [ ] Výstup, který už v systému není (např. po výměně ovladače), zůstane v seznamu šedý se stavem „Chybí“.
