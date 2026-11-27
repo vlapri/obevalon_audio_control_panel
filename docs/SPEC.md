@@ -429,31 +429,38 @@ obevalon_audio_control_panel/
 │  └─ TESTING.md                   # manuální testovací checklist (audio na reálném HW, aktualizace)
 ├─ src/
 │  ├─ Obevalon.AudioControlPanel/              # WPF aplikace (exe)
-│  │  ├─ App.xaml(.cs)
+│  │  ├─ App.xaml(.cs)                         # skladba služeb, životní cyklus, okna, OSD
 │  │  ├─ app.manifest                          # asInvoker, PerMonitorV2, supportedOS Win10/11
-│  │  ├─ Assets/                               # app.svg, tray.svg, tray-muted.svg (zdroje) + vygenerované .ico
-│  │  ├─ Localization/                         # Strings.resx, Strings.cs.resx, LocExtension
-│  │  ├─ Themes/                               # Light.xaml, Dark.xaml, Controls.xaml, ThemeManager
+│  │  ├─ Assets/                               # app/tray/tray-muted/tray-update .svg (zdroje) + vygenerované .ico
+│  │  ├─ Controls/                             # HotkeyBox
 │  │  ├─ Converters/                           # převodníky hodnot pro XAML
+│  │  ├─ Hotkeys/                              # HotkeyManager (skryté okno, WM_HOTKEY)
+│  │  ├─ Localization/                         # Strings.resx, Strings.cs.resx, LocalizationManager, LocExtension
+│  │  ├─ Themes/                               # ThemeManager (WPF Fluent, Application.ThemeMode)
 │  │  ├─ Tray/                                 # TrayIconController, kontextové menu
-│  │  ├─ ViewModels/                           # MainViewModel, OutputDeviceViewModel, MicrophoneViewModel, SettingsViewModel, AboutViewModel, UpdateViewModel
-│  │  └─ Views/                                # MainWindow, SettingsWindow, AboutWindow, OsdWindow, UpdateNotificationWindow, HotkeyBox
+│  │  ├─ ViewModels/                           # Main, OutputDevice, Microphone, Settings, HotkeyItem, Update, LocalizedOption
+│  │  └─ Views/                                # MainWindow, SettingsWindow, AboutWindow, UpdateNotificationWindow, OsdWindow
 │  ├─ Obevalon.AudioControlPanel.Core/         # net10.0, bez závislosti na Windows
 │  │  ├─ Audio/                                # AudioDevice, IAudioDeviceService, IMicrophoneService
+│  │  ├─ Autostart/                            # IAutostartService, AutostartCommand
+│  │  ├─ Diagnostics/                          # AppLog (volitelný log)
+│  │  ├─ Hotkeys/                              # HotkeyGesture, HotkeyAction
 │  │  ├─ Localization/                         # LanguageResolver
-│  │  ├─ Settings/                             # AppSettings, IniDocument, SettingsSerializer, IniSettingsStore, SettingsManager, SettingsPathResolver, SettingsMigrator
 │  │  ├─ Logic/                                # OutputEntry, DeviceCatalog (sloučení, pořadí), CycleSelector
-│  │  └─ Updates/                              # UpdateManifest, UpdateChecker, UpdateDownloader, UpdateScheduler, SignatureVerifier, UpdateSigningKey
+│  │  ├─ Settings/                             # AppSettings, IniDocument, SettingsSerializer, IniSettingsStore, SettingsManager, SettingsPathResolver, SettingsMigrator
+│  │  ├─ Updates/                              # SemanticVersion, UpdateManifest, UpdateSignature, UpdateChecker, UpdateDownloader, RuntimeRequirement, update-signing-keys.pem
+│  │  ├─ AppInfo.cs
+│  │  └─ StartupOptions.cs
 │  └─ Obevalon.AudioControlPanel.Platform/     # net10.0-windows
 │     ├─ CoreAudio/
-│     │  ├─ Interop/                           # COM rozhraní, PROPERTYKEY, enumy (vč. IPolicyConfig)
+│     │  ├─ Interop/                           # COM rozhraní, PROPERTYKEY, enumy (vč. IPolicyConfig), ComHelper
 │     │  ├─ AudioDeviceService.cs
 │     │  └─ MicrophoneService.cs
 │     ├─ Autostart/RegistryAutostartService.cs
-│     ├─ Hotkeys/GlobalHotkeys.cs                # RegisterHotKey / UnregisterHotKey (okno a WM_HOTKEY: App/Hotkeys/HotkeyManager)
+│     ├─ Hotkeys/GlobalHotkeys.cs              # RegisterHotKey / UnregisterHotKey
 │     ├─ Updates/                              # ExeSwapUpdateInstaller, DotNetRuntimeProbe
-│     ├─ Shell/                                # SingleInstance, SystemMetrics, SystemThemeProvider, ...
-│     └─ Native/                               # P/Invoke (user32, dwmapi)
+│     ├─ Shell/                                # SingleInstance, SystemMetrics
+│     └─ Native/                               # P/Invoke (user32)
 ├─ tests/
 │  └─ Obevalon.AudioControlPanel.Core.Tests/   # xUnit, net10.0
 ├─ .editorconfig
@@ -539,7 +546,7 @@ Výstupní soubor: **`OACP.exe`** (zkratka Obevalon Audio Control Panel). Název
 
 ## 9. Plán práce (milníky)
 
-Stav: ✅ = hotovo, 🧪 = implementováno, čeká na ověření na reálném HW (viz `docs/TESTING.md`).
+Stav: ✅ = hotovo, 🧪 = implementováno, čeká na ověření na reálném HW (viz `docs/TESTING.md`), ⏳ = čeká na kroky autora (viz níže).
 
 | Milník | Obsah | Výstup |
 |---|---|---|
@@ -552,8 +559,15 @@ Stav: ✅ = hotovo, 🧪 = implementováno, čeká na ověření na reálném HW
 | **M6 – Lokalizace a motivy** 🧪 | resx CZ/EN, autodetekce + přepnutí za běhu, Light/Dark + auto, tmavý titulek, okno Nastavení | Dvojjazyčná aplikace s motivy |
 | **M7 – Klávesové zkratky** 🧪 | `Win32HotkeyService`, ovládací prvek pro zachycení zkratky, hlášení konfliktů | Globální zkratky |
 | **M8 – Aktualizace** 🧪 | Podpisový klíč, `make-update-manifest.ps1`, rozšíření `release.yml`, `UpdateChecker` / `Downloader` / `Scheduler` + testy, `ExeSwapUpdateInstaller`, `DotNetRuntimeProbe`, oznamovací okno, položka v tray, `docs/RELEASING.md` | Ověřeno ostrou aktualizací `v0.8.0` → `v0.8.1` |
-| **M9 – Dokončení** | O aplikaci, finální ikony, OSD oznámení, logování, ošetření chyb, migrace INI, `docs/TESTING.md` | Release candidate |
-| **M10 – Vydání 1.0** | Zveřejnit repozitář, projít manuální checklist (Win11 + Win10), README se screenshoty, `v1.0.0` | Veřejné vydání |
+| **M9 – Dokončení** 🧪 | O aplikaci, finální ikony, OSD oznámení, logování, ošetření chyb, migrace INI, `docs/TESTING.md` | Release candidate |
+| **M10 – Vydání 1.0** ⏳ | Zveřejnit repozitář, projít manuální checklist (Win11 + Win10), README se screenshoty, `v1.0.0` | Veřejné vydání |
+
+**Kroky autora pro M10** (nelze je udělat bez přístupu k Windows a k nastavení repozitáře):
+1. Uložit soukromý podpisový klíč do GitHub secretu `UPDATE_SIGNING_KEY` (`docs/RELEASING.md`).
+2. Projít `docs/TESTING.md` na Windows 11 (a namátkově Windows 10).
+3. Vydat testovací `v0.9.0` a `v0.9.1` a ověřit automatickou aktualizaci (TESTING M8).
+4. Zveřejnit repozitář (*Settings → General → Danger Zone → Change visibility*), doplnit screenshoty do README.
+5. Vydat `v1.0.0`.
 
 Aktualizace (M8) je zařazená před vydáním 1.0 záměrně: všechny verze od 1.0 se pak
 umí aktualizovat samy. Verze bez updateru by uživatel musel aktualizovat ručně.

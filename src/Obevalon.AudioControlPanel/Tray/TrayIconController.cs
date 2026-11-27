@@ -27,6 +27,7 @@ internal sealed class TrayIconController : IDisposable
     private readonly Action _showUpdate;
     private readonly Action _showWindow;
     private readonly Action _showSettings;
+    private readonly Action _showAbout;
     private readonly Action _exit;
     private readonly DrawingIcon _normalIcon;
     private readonly DrawingIcon _mutedIcon;
@@ -38,11 +39,13 @@ internal sealed class TrayIconController : IDisposable
         Action showWindow,
         Action showSettings,
         Action showUpdate,
+        Action showAbout,
         Action exit)
     {
         _viewModel = viewModel;
         _updates = updates;
         _showUpdate = showUpdate;
+        _showAbout = showAbout;
         _showWindow = showWindow;
         _showSettings = showSettings;
         _exit = exit;
@@ -167,6 +170,10 @@ internal sealed class TrayIconController : IDisposable
         var settings = new MenuItem { Header = loc["Tray_Settings"] };
         settings.Click += (_, _) => _showSettings();
         menu.Items.Add(settings);
+
+        var about = new MenuItem { Header = loc["Tray_About"] };
+        about.Click += (_, _) => _showAbout();
+        menu.Items.Add(about);
 
         var exit = new MenuItem { Header = loc["Tray_Exit"] };
         exit.Click += (_, _) => _exit();

@@ -24,6 +24,7 @@
         <ColumnDefinition Width="Auto" />
         <ColumnDefinition Width="*" />
         <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="Auto" />
       </Grid.ColumnDefinitions>
       <Image Source="/Assets/app.ico" Width="32" Height="32" RenderOptions.BitmapScalingMode="HighQuality" />
       <StackPanel Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">
@@ -33,6 +34,9 @@
         </TextBlock>
       </StackPanel>
       <Button Grid.Column="2" Style="{StaticResource RowIconButton}" Width="32" Height="32" FontSize="16"
+              Content="&#xE946;" Click="OnAboutClick" VerticalAlignment="Center"
+              ToolTip="{loc:Loc About_Title}" AutomationProperties.Name="{loc:Loc About_Title}" />
+      <Button Grid.Column="3" Style="{StaticResource RowIconButton}" Width="32" Height="32" FontSize="16"
               Content="&#xE713;" Click="OnSettingsClick" VerticalAlignment="Center"
               ToolTip="{loc:Loc Settings_Title}" AutomationProperties.Name="{loc:Loc Settings_Title}" />
     </Grid>

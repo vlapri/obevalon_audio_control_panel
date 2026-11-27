@@ -7,6 +7,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Obevalon.AudioControlPanel.Core.Audio;
 using Obevalon.AudioControlPanel.Core.Autostart;
+using Obevalon.AudioControlPanel.Core.Diagnostics;
 using Obevalon.AudioControlPanel.Core.Hotkeys;
 using Obevalon.AudioControlPanel.Core.Localization;
 using Obevalon.AudioControlPanel.Core.Settings;
@@ -190,6 +191,28 @@ public sealed partial class SettingsViewModel : ObservableObject
         get => _settings.Current.Updates.AutoCheck;
         set => Update(_settings.Current.Updates.AutoCheck, value, v => _settings.Current.Updates.AutoCheck = v);
     }
+
+    // ---- Diagnostics ----
+
+    public bool Logging
+    {
+        get => _settings.Current.Logging;
+        set => Update(_settings.Current.Logging, value, v =>
+        {
+            _settings.Current.Logging = v;
+            if (v)
+            {
+                AppLog.Enable(LogDirectory);
+                AppLog.Info("Logging enabled in settings");
+            }
+            else
+            {
+                AppLog.Disable();
+            }
+        });
+    }
+
+    public string LogDirectory => Path.Combine(Path.GetDirectoryName(_settings.SettingsPath) ?? ".", "logs");
 
     // ---- Startup ----
 

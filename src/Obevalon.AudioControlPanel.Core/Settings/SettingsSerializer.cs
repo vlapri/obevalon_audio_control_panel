@@ -32,6 +32,7 @@ public static class SettingsSerializer
         settings.SwitchCommunicationsDevice = GetBool(general, "SwitchCommunicationsDevice") ?? settings.SwitchCommunicationsDevice;
         settings.ShowSwitchOsd = GetBool(general, "ShowSwitchOsd") ?? settings.ShowSwitchOsd;
         settings.ShowHiddenDevices = GetBool(general, "ShowHiddenDevices") ?? settings.ShowHiddenDevices;
+        settings.Logging = GetBool(general, "Logging") ?? settings.Logging;
 
         settings.MicrophoneDeviceId = GetString(document.GetSection(MicrophoneSection), "DeviceId");
 
@@ -70,6 +71,7 @@ public static class SettingsSerializer
         general.SetValue("SwitchCommunicationsDevice", Format(settings.SwitchCommunicationsDevice));
         general.SetValue("ShowSwitchOsd", Format(settings.ShowSwitchOsd));
         general.SetValue("ShowHiddenDevices", Format(settings.ShowHiddenDevices));
+        general.SetValue("Logging", Format(settings.Logging), "diagnostic log in the logs folder");
 
         document.GetOrAddSection(MicrophoneSection)
             .SetValue("DeviceId", settings.MicrophoneDeviceId, "empty = system default microphone");

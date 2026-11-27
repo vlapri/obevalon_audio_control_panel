@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Threading;
 using Obevalon.AudioControlPanel.Core;
 using Obevalon.AudioControlPanel.Core.Autostart;
+using Obevalon.AudioControlPanel.Core.Diagnostics;
 using Obevalon.AudioControlPanel.Core.Hotkeys;
 using Obevalon.AudioControlPanel.Core.Settings;
 using Obevalon.AudioControlPanel.Hotkeys;
@@ -40,6 +41,7 @@ public partial class App : Application
     private HotkeyManager? _hotkeys;
     private UpdateViewModel? _updates;
     private UpdateNotificationWindow? _updateWindow;
+    private AboutWindow? _aboutWindow;
     private bool _exiting;
 
     internal StartupOptions Options { get; private set; } = new();
@@ -49,6 +51,13 @@ public partial class App : Application
         base.OnStartup(e);
 
         DispatcherUnhandledException += OnDispatcherUnhandledException;
+        AppDomain.CurrentDomain.UnhandledException += (_, args) =>
+            AppLog.Error("Unhandled exception", args.ExceptionObject as Exception);
+        TaskScheduler.UnobservedTaskException += (_, args) =>
+        {
+            AppLog.Error("Unobserved task exception", args.Exception);
+            args.SetObserved();
+        };
         Options = StartupOptions.Parse(e.Args);
 
         WaitForPreviousProcess(Options.WaitForProcessId);
@@ -68,6 +77,13 @@ public partial class App : Application
         new ExeSwapUpdateInstaller(executablePath).CleanupOldExecutable();
 
         _settings = new SettingsManager(CreateSettingsStore());
+        if (Options.EnableLogging || _settings.Current.Logging)
+        {
+            AppLog.Enable(Path.Combine(Path.GetDirectoryName(_settings.SettingsPath) ?? AppContext.BaseDirectory, "logs"));
+        }
+
+        AppLog.Info($"Start {AppInfo.ProductName} {AppInfo.Version}, {Environment.OSVersion}, .NET {Environment.Version}, "
+            + $"settings {_settings.SettingsPath} (portable: {_settings.IsPortable}), args: {string.Join(' ', e.Args)}");
         LocalizationManager.Instance.SetLanguage(_settings.Current.Language);
         ThemeManager.Apply(_settings.Current.Theme);
 
@@ -83,12 +99,16 @@ public partial class App : Application
         }
         catch (COMException ex)
         {
+            AppLog.Error("Audio services could not start", ex);
             ShowError(LocalizationManager.Instance.Format("Error_AudioUnavailable", ex.Message));
             Shutdown(1);
             return;
         }
 
         _viewModel = new MainViewModel(_audio, _microphone, _settings);
+        _viewModel.OutputSwitched += (_, name) => ShowOsd("\uE767", name);
+        _viewModel.Microphone.MuteToggled += (_, muted) =>
+            ShowOsd(muted ? "\uEC54" : "\uE720", LocalizationManager.Instance[muted ? "Osd_MicMuted" : "Osd_MicOn"]);
 
         _window = new MainWindow { DataContext = _viewModel };
         _window.RestorePosition(_settings.Current.WindowLeft, _settings.Current.WindowTop);
@@ -101,7 +121,7 @@ public partial class App : Application
         _updates.UpdateFound += (_, _) => ShowUpdateNotification();
         _updates.CloseRequested += (_, _) => _updateWindow?.Close();
 
-        _tray = new TrayIconController(_viewModel, _updates, ShowMainWindow, ShowSettings, ShowUpdateNotification, ExitApplication);
+        _tray = new TrayIconController(_viewModel, _updates, ShowMainWindow, ShowSettings, ShowUpdateNotification, ShowAbout, ExitApplication);
 
         _hotkeys = new HotkeyManager();
         _hotkeys.HotkeyPressed += OnHotkeyPressed;
@@ -125,6 +145,7 @@ public partial class App : Application
 
     protected override void OnExit(ExitEventArgs e)
     {
+        AppLog.Info($"Exit (code {e.ApplicationExitCode})");
         _hotkeys?.Dispose();
         _updates?.Dispose();
         _tray?.Dispose();
@@ -194,6 +215,47 @@ public partial class App : Application
         _settingsWindow.Activate();
     }
 
+    /// <summary>Shows the about window (one at a time).</summary>
+    internal void ShowAbout()
+    {
+        if (_updates is null || _exiting)
+        {
+            return;
+        }
+
+        if (_aboutWindow is not null)
+        {
+            _aboutWindow.Activate();
+            return;
+        }
+
+        _aboutWindow = new AboutWindow { DataContext = _updates };
+        if (_window is { IsVisible: true })
+        {
+            _aboutWindow.Owner = _window;
+        }
+        else
+        {
+            _aboutWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+        }
+
+        _aboutWindow.Closed += (_, _) => _aboutWindow = null;
+        _aboutWindow.Show();
+        _aboutWindow.Activate();
+    }
+
+    /// <summary>
+    /// Short on-screen confirmation of a switch (SPEC F1.9), only when the main window is not in front,
+    /// i.e. after using the tray menu or a hotkey.
+    /// </summary>
+    private void ShowOsd(string glyph, string message)
+    {
+        if (_settings?.Current.ShowSwitchOsd == true && _window?.IsActive != true)
+        {
+            OsdWindow.ShowMessage(glyph, message, TimeSpan.FromSeconds(1.5));
+        }
+    }
+
     /// <summary>Shows the update notification (after a check found an update, or from the tray menu).</summary>
     internal void ShowUpdateNotification()
     {
@@ -224,6 +286,7 @@ public partial class App : Application
 
         _exiting = true;
         _updateWindow?.Close();
+        _aboutWindow?.Close();
         _settingsWindow?.Close();
         _window?.Close();
         Shutdown();
@@ -291,6 +354,7 @@ public partial class App : Application
         }
         catch (Exception ex) when (ex is SecurityException or UnauthorizedAccessException or IOException)
         {
+            AppLog.Error("Autostart repair failed", ex);
             ShowError(LocalizationManager.Instance.Format("Error_AutostartFailed", ex.Message));
         }
     }
@@ -329,6 +393,7 @@ public partial class App : Application
 
     private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
     {
+        AppLog.Error("Unhandled UI exception", e.Exception);
         ShowError(LocalizationManager.Instance.Format("Error_Unexpected_Message", e.Exception.Message));
         e.Handled = true;
     }

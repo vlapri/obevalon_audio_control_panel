@@ -16,6 +16,7 @@ public class SettingsSerializerTests
         Assert.True(settings.SwitchCommunicationsDevice);
         Assert.True(settings.ShowSwitchOsd);
         Assert.False(settings.ShowHiddenDevices);
+        Assert.False(settings.Logging);
         Assert.Null(settings.MicrophoneDeviceId);
         Assert.Null(settings.Hotkeys.NextOutput);
         Assert.True(settings.Updates.AutoCheck);
@@ -33,6 +34,7 @@ public class SettingsSerializerTests
             SwitchCommunicationsDevice = false,
             ShowSwitchOsd = false,
             ShowHiddenDevices = true,
+            Logging = true,
             MicrophoneDeviceId = "{0.0.1.00000000}.{mic}",
             WindowLeft = 120.5,
             WindowTop = -30,
@@ -62,6 +64,7 @@ public class SettingsSerializerTests
         Assert.False(read.SwitchCommunicationsDevice);
         Assert.False(read.ShowSwitchOsd);
         Assert.True(read.ShowHiddenDevices);
+        Assert.True(read.Logging);
         Assert.Equal("{0.0.1.00000000}.{mic}", read.MicrophoneDeviceId);
         Assert.Equal(120.5, read.WindowLeft);
         Assert.Equal(-30, read.WindowTop);

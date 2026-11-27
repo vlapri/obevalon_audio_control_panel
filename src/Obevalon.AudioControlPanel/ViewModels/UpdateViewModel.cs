@@ -6,6 +6,7 @@ using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Obevalon.AudioControlPanel.Core;
+using Obevalon.AudioControlPanel.Core.Diagnostics;
 using Obevalon.AudioControlPanel.Core.Settings;
 using Obevalon.AudioControlPanel.Core.Updates;
 using Obevalon.AudioControlPanel.Localization;
@@ -170,12 +171,14 @@ public sealed partial class UpdateViewModel : ObservableObject, IDisposable
 
             State = UpdateState.Installing;
             Message = loc["Update_Installing"];
+            AppLog.Info($"Installing update {AvailableVersion}");
             _installer.InstallAndRestart(downloaded, startInTray: !_isMainWindowVisible());
             CloseRequested?.Invoke(this, EventArgs.Empty);
             _exitApplication();
         }
-        catch (UpdateVerificationException)
+        catch (UpdateVerificationException ex)
         {
+            AppLog.Error("Update verification failed", ex);
             State = UpdateState.Available;
             Message = loc["Update_VerificationFailed"];
         }
@@ -187,6 +190,7 @@ public sealed partial class UpdateViewModel : ObservableObject, IDisposable
         catch (Exception ex) when (ex is HttpRequestException or IOException or UnauthorizedAccessException
             or System.ComponentModel.Win32Exception or InvalidOperationException)
         {
+            AppLog.Error("Update failed", ex);
             State = UpdateState.Available;
             Message = loc.Format("Update_Failed", ex.Message);
         }
@@ -264,6 +268,7 @@ public sealed partial class UpdateViewModel : ObservableObject, IDisposable
             result = new UpdateCheckResult(UpdateCheckStatus.NetworkError, Error: ex.Message);
         }
 
+        AppLog.Info($"Update check ({(manual ? "manual" : "automatic")}): {result.Status} {result.Version} {result.Error}");
         if (result.Status is not (UpdateCheckStatus.NetworkError or UpdateCheckStatus.NotConfigured))
         {
             _settings.Current.Updates.LastCheckUtc = DateTimeOffset.UtcNow;

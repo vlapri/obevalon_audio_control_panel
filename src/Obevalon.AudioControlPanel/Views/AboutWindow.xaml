@@ -1,0 +1,60 @@
+<Window x:Class="Obevalon.AudioControlPanel.Views.AboutWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:loc="clr-namespace:Obevalon.AudioControlPanel.Localization"
+        xmlns:vm="clr-namespace:Obevalon.AudioControlPanel.ViewModels"
+        xmlns:core="clr-namespace:Obevalon.AudioControlPanel.Core;assembly=Obevalon.AudioControlPanel.Core"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=vm:UpdateViewModel}"
+        Title="{loc:Loc About_Title}"
+        Icon="/Assets/app.ico"
+        Width="420"
+        SizeToContent="Height"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner"
+        Style="{StaticResource AppWindow}">
+  <StackPanel Margin="20">
+    <StackPanel Orientation="Horizontal">
+      <Image Source="/Assets/app.ico" Width="64" Height="64" RenderOptions.BitmapScalingMode="HighQuality" />
+      <StackPanel Margin="16,0,0,0" VerticalAlignment="Center">
+        <TextBlock Text="{x:Static core:AppInfo.ProductName}" FontSize="18" FontWeight="SemiBold" TextWrapping="Wrap" />
+        <TextBlock Margin="0,2,0,0" Style="{StaticResource SecondaryText}" FontSize="12">
+          <Run Text="{loc:Loc Common_Version}" /><Run Text=" " /><Run Text="{x:Static core:AppInfo.Version}" />
+        </TextBlock>
+      </StackPanel>
+    </StackPanel>
+
+    <TextBlock Margin="0,16,0,0" TextWrapping="Wrap" Text="{loc:Loc About_Description}" />
+
+    <TextBlock Margin="0,12,0,0">
+      <Run Text="{loc:Loc Common_Author}" /><Run Text=": " /><Run Text="{x:Static core:AppInfo.Author}" FontWeight="SemiBold" />
+    </TextBlock>
+    <TextBlock Margin="0,4,0,0">
+      <Hyperlink NavigateUri="{x:Static core:AppInfo.RepositoryUrl}" RequestNavigate="OnRequestNavigate">
+        <Run Text="{loc:Loc Common_Repository}" />
+      </Hyperlink>
+    </TextBlock>
+
+    <TextBlock Margin="0,12,0,0" TextWrapping="Wrap" Style="{StaticResource SecondaryText}" FontSize="12"
+               Text="{loc:Loc About_LicenseText}" />
+    <TextBlock Margin="0,4,0,0">
+      <Hyperlink NavigateUri="{x:Static core:AppInfo.LicenseUrl}" RequestNavigate="OnRequestNavigate">
+        <Run Text="{loc:Loc About_ViewLicense}" />
+      </Hyperlink>
+    </TextBlock>
+
+    <!-- Updates -->
+    <StackPanel Margin="0,16,0,0" Orientation="Horizontal">
+      <Button Style="{StaticResource TextButton}" Content="{loc:Loc Settings_CheckNow}" Command="{Binding CheckNowCommand}" />
+      <TextBlock Margin="10,0,0,0" VerticalAlignment="Center" Style="{StaticResource SecondaryText}" Text="{Binding LastCheckText}" />
+    </StackPanel>
+    <TextBlock Margin="0,6,0,0" TextWrapping="Wrap" Text="{Binding Message}"
+               Visibility="{Binding Message, Converter={StaticResource NullToCollapsed}}" />
+
+    <Button Margin="0,16,0,0" HorizontalAlignment="Right" Style="{StaticResource TextButton}" IsCancel="True" IsDefault="True"
+            Content="{loc:Loc Common_Close}" Click="OnCloseClick" />
+  </StackPanel>
+</Window>

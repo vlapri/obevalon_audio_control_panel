@@ -337,4 +337,28 @@ Update it to the current location?</value>
   <data name="Tray_UpdateAvailable" xml:space="preserve">
     <value>Update to version {0}…</value>
   </data>
+  <data name="About_Title" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="Tray_About" xml:space="preserve">
+    <value>About…</value>
+  </data>
+  <data name="About_Description" xml:space="preserve">
+    <value>Quick switching of audio outputs (e.g. speakers ↔ HDMI projector) and microphone control.</value>
+  </data>
+  <data name="About_LicenseText" xml:space="preserve">
+    <value>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License version 3 or later. It comes with ABSOLUTELY NO WARRANTY.</value>
+  </data>
+  <data name="About_ViewLicense" xml:space="preserve">
+    <value>License text</value>
+  </data>
+  <data name="Osd_MicMuted" xml:space="preserve">
+    <value>Microphone muted</value>
+  </data>
+  <data name="Osd_MicOn" xml:space="preserve">
+    <value>Microphone on</value>
+  </data>
+  <data name="Settings_Logging" xml:space="preserve">
+    <value>Write a diagnostic log (logs folder next to the settings)</value>
+  </data>
 </root>
