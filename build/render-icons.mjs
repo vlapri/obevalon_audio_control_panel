@@ -3,7 +3,7 @@
 //
 // Requirements: Node.js with Playwright and Chromium.
 // Usage:  node build/render-icons.mjs
-// Output: src/Obevalon.AudioControlPanel/Assets/{app,tray,tray-muted}.ico
+// Output: src/Obevalon.AudioControlPanel/Assets/{app,tray,tray-muted,tray-update}.ico
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -20,6 +20,7 @@ const icons = {
   'app.ico': [...[16, 20, 24, 32].map(s => ['tray.svg', s]), ...[40, 48, 64, 96, 128, 256].map(s => ['app.svg', s])],
   'tray.ico': [16, 20, 24, 32, 40, 48, 64].map(s => ['tray.svg', s]),
   'tray-muted.ico': [16, 20, 24, 32, 40, 48, 64].map(s => ['tray-muted.svg', s]),
+  'tray-update.ico': [16, 20, 24, 32, 40, 48, 64].map(s => ['tray-update.svg', s]),
 };
 
 async function render(page, svgName, size) {

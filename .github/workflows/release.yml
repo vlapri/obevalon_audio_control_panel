@@ -51,11 +51,22 @@ jobs:
             Compress-Archive -Path "$staging/*" -DestinationPath "dist/OACP-$v-$rid.zip"
           }
 
+      - name: Create and sign update manifest
+        shell: pwsh
+        env:
+          UPDATE_SIGNING_KEY: ${{ secrets.UPDATE_SIGNING_KEY }}
+        run: >
+          ./build/make-update-manifest.ps1
+          -Version '${{ steps.version.outputs.version }}'
+          -DistDir dist
+          -Repository '${{ github.repository }}'
+
+      - name: Checksums
+        shell: pwsh
+        run: |
           Get-ChildItem dist -File |
             ForEach-Object { '{0}  {1}' -f (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant(), $_.Name } |
             Set-Content dist/SHA256SUMS.txt -Encoding ascii
-
-          # TODO(M8): generate and sign update.json (build/make-update-manifest.ps1, secret UPDATE_SIGNING_KEY).
 
       - name: Create GitHub release
         shell: pwsh

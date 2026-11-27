@@ -30,8 +30,10 @@ public sealed partial class SettingsViewModel : ObservableObject
         SettingsManager settings,
         IAudioDeviceService audio,
         IMicrophoneService microphone,
-        HotkeyManager hotkeys)
+        HotkeyManager hotkeys,
+        UpdateViewModel updates)
     {
+        Updates = updates;
         _autostart = autostart;
         _settings = settings;
         _microphone = microphone;
@@ -177,6 +179,16 @@ public sealed partial class SettingsViewModel : ObservableObject
 
         SaveSettings();
         return gesture is not null && !_hotkeys.IsAvailable(gesture) ? LocalizationManager.Instance["Hotkey_InUse"] : null;
+    }
+
+    // ---- Updates ----
+
+    public UpdateViewModel Updates { get; }
+
+    public bool AutoCheckUpdates
+    {
+        get => _settings.Current.Updates.AutoCheck;
+        set => Update(_settings.Current.Updates.AutoCheck, value, v => _settings.Current.Updates.AutoCheck = v);
     }
 
     // ---- Startup ----

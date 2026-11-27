@@ -93,6 +93,16 @@
               Command="{Binding RepairAutostartCommand}" />
     </StackPanel>
 
+    <!-- Updates -->
+    <TextBlock Style="{StaticResource SectionHeader}" Text="{loc:Loc Settings_UpdatesHeader}" />
+    <CheckBox IsChecked="{Binding AutoCheckUpdates}" Content="{loc:Loc Settings_AutoCheck}" />
+    <StackPanel Margin="0,8,0,0" Orientation="Horizontal">
+      <Button Style="{StaticResource TextButton}" Content="{loc:Loc Settings_CheckNow}" Command="{Binding Updates.CheckNowCommand}" />
+      <TextBlock Margin="10,0,0,0" VerticalAlignment="Center" Style="{StaticResource SecondaryText}" Text="{Binding Updates.LastCheckText}" />
+    </StackPanel>
+    <TextBlock Margin="0,6,0,0" TextWrapping="Wrap" Text="{Binding Updates.Message}"
+               Visibility="{Binding Updates.Message, Converter={StaticResource NullToCollapsed}}" />
+
     <!-- Settings file -->
     <TextBlock Style="{StaticResource SectionHeader}" Text="{loc:Loc Settings_FileHeader}" />
     <TextBox IsReadOnly="True" BorderThickness="0" Background="Transparent" TextWrapping="Wrap"

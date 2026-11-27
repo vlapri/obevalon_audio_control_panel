@@ -256,4 +256,85 @@ Update it to the current location?</value>
   <data name="Hotkey_Duplicate" xml:space="preserve">
     <value>This shortcut is already assigned to another action.</value>
   </data>
+  <data name="Update_NewVersion" xml:space="preserve">
+    <value>New version available:</value>
+  </data>
+  <data name="Update_YourVersion" xml:space="preserve">
+    <value>You have</value>
+  </data>
+  <data name="Update_WhatsNew" xml:space="preserve">
+    <value>What's new</value>
+  </data>
+  <data name="Update_Install" xml:space="preserve">
+    <value>Update</value>
+  </data>
+  <data name="Update_Later" xml:space="preserve">
+    <value>Later</value>
+  </data>
+  <data name="Update_Skip" xml:space="preserve">
+    <value>Skip this version</value>
+  </data>
+  <data name="Update_Downloading" xml:space="preserve">
+    <value>Downloading the update…</value>
+  </data>
+  <data name="Update_Installing" xml:space="preserve">
+    <value>Installing and restarting…</value>
+  </data>
+  <data name="Update_Failed" xml:space="preserve">
+    <value>The update failed: {0}</value>
+  </data>
+  <data name="Update_VerificationFailed" xml:space="preserve">
+    <value>The downloaded file failed the security check and was deleted. Nothing was installed.</value>
+  </data>
+  <data name="Update_FolderNotWritable" xml:space="preserve">
+    <value>The application folder is read-only, so the update cannot be installed automatically. Download the new version from the release page.</value>
+  </data>
+  <data name="Update_OpenDownloadPage" xml:space="preserve">
+    <value>Open download page</value>
+  </data>
+  <data name="Update_RuntimeRequired" xml:space="preserve">
+    <value>This version needs .NET Desktop Runtime {0} or newer. Install it first, then update.</value>
+  </data>
+  <data name="Update_Updated" xml:space="preserve">
+    <value>Updated to version {0}</value>
+  </data>
+  <data name="Update_UpToDate" xml:space="preserve">
+    <value>You have the latest version.</value>
+  </data>
+  <data name="Update_Checking" xml:space="preserve">
+    <value>Checking for updates…</value>
+  </data>
+  <data name="Update_CheckFailed" xml:space="preserve">
+    <value>Could not check for updates: {0}</value>
+  </data>
+  <data name="Update_InvalidSignature" xml:space="preserve">
+    <value>The update information has an invalid signature and was ignored.</value>
+  </data>
+  <data name="Update_InvalidManifest" xml:space="preserve">
+    <value>The update information is invalid.</value>
+  </data>
+  <data name="Update_NotConfigured" xml:space="preserve">
+    <value>Updates are not available in this build.</value>
+  </data>
+  <data name="Update_NoAsset" xml:space="preserve">
+    <value>The new version is not available for this platform.</value>
+  </data>
+  <data name="Update_LastCheck" xml:space="preserve">
+    <value>Last check: {0}</value>
+  </data>
+  <data name="Update_Never" xml:space="preserve">
+    <value>Not checked yet</value>
+  </data>
+  <data name="Settings_UpdatesHeader" xml:space="preserve">
+    <value>Updates</value>
+  </data>
+  <data name="Settings_AutoCheck" xml:space="preserve">
+    <value>Check for updates automatically (at start and once a day)</value>
+  </data>
+  <data name="Settings_CheckNow" xml:space="preserve">
+    <value>Check now</value>
+  </data>
+  <data name="Tray_UpdateAvailable" xml:space="preserve">
+    <value>Update to version {0}…</value>
+  </data>
 </root>
