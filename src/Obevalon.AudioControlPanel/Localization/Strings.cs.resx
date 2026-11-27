@@ -256,4 +256,85 @@ Nastavit ho na aktuální umístění?</value>
   <data name="Hotkey_Duplicate" xml:space="preserve">
     <value>Tato zkratka je už přiřazená jiné akci.</value>
   </data>
+  <data name="Update_NewVersion" xml:space="preserve">
+    <value>Je k dispozici nová verze:</value>
+  </data>
+  <data name="Update_YourVersion" xml:space="preserve">
+    <value>Máte verzi</value>
+  </data>
+  <data name="Update_WhatsNew" xml:space="preserve">
+    <value>Co je nového</value>
+  </data>
+  <data name="Update_Install" xml:space="preserve">
+    <value>Aktualizovat</value>
+  </data>
+  <data name="Update_Later" xml:space="preserve">
+    <value>Později</value>
+  </data>
+  <data name="Update_Skip" xml:space="preserve">
+    <value>Přeskočit tuto verzi</value>
+  </data>
+  <data name="Update_Downloading" xml:space="preserve">
+    <value>Stahuji aktualizaci…</value>
+  </data>
+  <data name="Update_Installing" xml:space="preserve">
+    <value>Instaluji a restartuji…</value>
+  </data>
+  <data name="Update_Failed" xml:space="preserve">
+    <value>Aktualizace selhala: {0}</value>
+  </data>
+  <data name="Update_VerificationFailed" xml:space="preserve">
+    <value>Stažený soubor neprošel bezpečnostní kontrolou a byl smazán. Nic nebylo nainstalováno.</value>
+  </data>
+  <data name="Update_FolderNotWritable" xml:space="preserve">
+    <value>Do složky aplikace nelze zapisovat, aktualizaci proto nejde nainstalovat automaticky. Stáhněte novou verzi ze stránky vydání.</value>
+  </data>
+  <data name="Update_OpenDownloadPage" xml:space="preserve">
+    <value>Otevřít stránku ke stažení</value>
+  </data>
+  <data name="Update_RuntimeRequired" xml:space="preserve">
+    <value>Tato verze potřebuje .NET Desktop Runtime {0} nebo novější. Nejdříve ho nainstalujte, potom aktualizujte.</value>
+  </data>
+  <data name="Update_Updated" xml:space="preserve">
+    <value>Aktualizováno na verzi {0}</value>
+  </data>
+  <data name="Update_UpToDate" xml:space="preserve">
+    <value>Máte nejnovější verzi.</value>
+  </data>
+  <data name="Update_Checking" xml:space="preserve">
+    <value>Kontroluji aktualizace…</value>
+  </data>
+  <data name="Update_CheckFailed" xml:space="preserve">
+    <value>Aktualizace se nepodařilo zkontrolovat: {0}</value>
+  </data>
+  <data name="Update_InvalidSignature" xml:space="preserve">
+    <value>Informace o aktualizaci mají neplatný podpis a byly ignorovány.</value>
+  </data>
+  <data name="Update_InvalidManifest" xml:space="preserve">
+    <value>Informace o aktualizaci jsou neplatné.</value>
+  </data>
+  <data name="Update_NotConfigured" xml:space="preserve">
+    <value>V tomto sestavení nejsou aktualizace k dispozici.</value>
+  </data>
+  <data name="Update_NoAsset" xml:space="preserve">
+    <value>Nová verze není pro tuto platformu k dispozici.</value>
+  </data>
+  <data name="Update_LastCheck" xml:space="preserve">
+    <value>Poslední kontrola: {0}</value>
+  </data>
+  <data name="Update_Never" xml:space="preserve">
+    <value>Zatím nekontrolováno</value>
+  </data>
+  <data name="Settings_UpdatesHeader" xml:space="preserve">
+    <value>Aktualizace</value>
+  </data>
+  <data name="Settings_AutoCheck" xml:space="preserve">
+    <value>Automaticky kontrolovat aktualizace (při startu a jednou denně)</value>
+  </data>
+  <data name="Settings_CheckNow" xml:space="preserve">
+    <value>Zkontrolovat nyní</value>
+  </data>
+  <data name="Tray_UpdateAvailable" xml:space="preserve">
+    <value>Aktualizovat na verzi {0}…</value>
+  </data>
 </root>

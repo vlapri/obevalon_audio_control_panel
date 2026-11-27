@@ -15,6 +15,7 @@ using Obevalon.AudioControlPanel.Localization;
 using Obevalon.AudioControlPanel.Platform.Autostart;
 using Obevalon.AudioControlPanel.Platform.CoreAudio;
 using Obevalon.AudioControlPanel.Platform.Shell;
+using Obevalon.AudioControlPanel.Platform.Updates;
 using Obevalon.AudioControlPanel.Themes;
 using Obevalon.AudioControlPanel.Tray;
 using Obevalon.AudioControlPanel.ViewModels;
@@ -37,6 +38,8 @@ public partial class App : Application
     private IAutostartService? _autostart;
     private SettingsWindow? _settingsWindow;
     private HotkeyManager? _hotkeys;
+    private UpdateViewModel? _updates;
+    private UpdateNotificationWindow? _updateWindow;
     private bool _exiting;
 
     internal StartupOptions Options { get; private set; } = new();
@@ -58,6 +61,11 @@ public partial class App : Application
             Shutdown();
             return;
         }
+
+        var executablePath = Environment.ProcessPath ?? Path.Combine(AppContext.BaseDirectory, AppInfo.ShortName + ".exe");
+
+        // Remove the previous version left behind by an update (SPEC F9.7).
+        new ExeSwapUpdateInstaller(executablePath).CleanupOldExecutable();
 
         _settings = new SettingsManager(CreateSettingsStore());
         LocalizationManager.Instance.SetLanguage(_settings.Current.Language);
@@ -87,8 +95,13 @@ public partial class App : Application
         _window.Closing += OnMainWindowClosing;
         MainWindow = _window;
 
-        _autostart = new RegistryAutostartService(Environment.ProcessPath ?? Path.Combine(AppContext.BaseDirectory, "OACP.exe"));
-        _tray = new TrayIconController(_viewModel, ShowMainWindow, ShowSettings, ExitApplication);
+        _autostart = new RegistryAutostartService(executablePath);
+
+        _updates = new UpdateViewModel(_settings, executablePath, () => _window?.IsVisible == true, ExitApplication);
+        _updates.UpdateFound += (_, _) => ShowUpdateNotification();
+        _updates.CloseRequested += (_, _) => _updateWindow?.Close();
+
+        _tray = new TrayIconController(_viewModel, _updates, ShowMainWindow, ShowSettings, ShowUpdateNotification, ExitApplication);
 
         _hotkeys = new HotkeyManager();
         _hotkeys.HotkeyPressed += OnHotkeyPressed;
@@ -101,11 +114,19 @@ public partial class App : Application
         }
 
         Dispatcher.BeginInvoke(CheckAutostartPath, DispatcherPriority.ApplicationIdle);
+
+        if (Options.Updated)
+        {
+            OsdWindow.ShowMessage("\uE895", LocalizationManager.Instance.Format("Update_Updated", AppInfo.Version), TimeSpan.FromSeconds(5));
+        }
+
+        _updates.StartAutomaticChecks();
     }
 
     protected override void OnExit(ExitEventArgs e)
     {
         _hotkeys?.Dispose();
+        _updates?.Dispose();
         _tray?.Dispose();
         _viewModel?.Dispose();
         _microphone?.Dispose();
@@ -138,7 +159,8 @@ public partial class App : Application
     /// <summary>Shows the settings window (one at a time).</summary>
     internal void ShowSettings()
     {
-        if (_autostart is null || _settings is null || _audio is null || _microphone is null || _hotkeys is null || _exiting)
+        if (_autostart is null || _settings is null || _audio is null || _microphone is null || _hotkeys is null
+            || _updates is null || _exiting)
         {
             return;
         }
@@ -152,7 +174,7 @@ public partial class App : Application
         // Release the hotkeys while the settings are open so they can be recorded again.
         var hotkeys = _hotkeys;
         hotkeys.Suspend();
-        _settingsWindow = new SettingsWindow { DataContext = new SettingsViewModel(_autostart, _settings, _audio, _microphone, hotkeys) };
+        _settingsWindow = new SettingsWindow { DataContext = new SettingsViewModel(_autostart, _settings, _audio, _microphone, hotkeys, _updates) };
         if (_window is { IsVisible: true })
         {
             _settingsWindow.Owner = _window;
@@ -172,6 +194,26 @@ public partial class App : Application
         _settingsWindow.Activate();
     }
 
+    /// <summary>Shows the update notification (after a check found an update, or from the tray menu).</summary>
+    internal void ShowUpdateNotification()
+    {
+        if (_updates is null || !_updates.IsUpdateAvailable || _exiting)
+        {
+            return;
+        }
+
+        if (_updateWindow is null)
+        {
+            _updateWindow = new UpdateNotificationWindow { DataContext = _updates };
+            _updateWindow.Closed += (_, _) => _updateWindow = null;
+            _updateWindow.Show();
+        }
+        else
+        {
+            _updateWindow.Activate();
+        }
+    }
+
     /// <summary>Exits the application (tray menu "Exit").</summary>
     internal void ExitApplication()
     {
@@ -181,6 +223,7 @@ public partial class App : Application
         }
 
         _exiting = true;
+        _updateWindow?.Close();
         _settingsWindow?.Close();
         _window?.Close();
         Shutdown();

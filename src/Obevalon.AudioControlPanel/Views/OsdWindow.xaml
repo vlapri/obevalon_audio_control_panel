@@ -1,0 +1,30 @@
+<Window x:Class="Obevalon.AudioControlPanel.Views.OsdWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        SizeToContent="WidthAndHeight"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        ShowActivated="False"
+        Topmost="True"
+        Focusable="False"
+        IsHitTestVisible="False"
+        WindowStartupLocation="Manual"
+        UseLayoutRounding="True">
+  <Border CornerRadius="8" Padding="18,12" Margin="8"
+          Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
+          BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}" BorderThickness="1">
+    <Border.Effect>
+      <DropShadowEffect BlurRadius="12" ShadowDepth="2" Opacity="0.3" />
+    </Border.Effect>
+    <StackPanel Orientation="Horizontal">
+      <TextBlock x:Name="IconText" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="20"
+                 VerticalAlignment="Center" Margin="0,0,12,0"
+                 Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+      <TextBlock x:Name="MessageText" FontSize="14" VerticalAlignment="Center" MaxWidth="420"
+                 TextTrimming="CharacterEllipsis" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+    </StackPanel>
+  </Border>
+</Window>

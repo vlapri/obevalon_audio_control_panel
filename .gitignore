@@ -26,5 +26,7 @@ logs/
 
 # Never commit signing keys
 *.pem
+# Public keys only (trusted update signing keys):
+!update-signing-keys.pem
 *.key
 *.pfx

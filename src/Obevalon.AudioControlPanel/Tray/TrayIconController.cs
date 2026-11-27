@@ -23,15 +23,26 @@ internal sealed class TrayIconController : IDisposable
 
     private readonly TaskbarIcon _taskbarIcon;
     private readonly MainViewModel _viewModel;
+    private readonly UpdateViewModel _updates;
+    private readonly Action _showUpdate;
     private readonly Action _showWindow;
     private readonly Action _showSettings;
     private readonly Action _exit;
     private readonly DrawingIcon _normalIcon;
     private readonly DrawingIcon _mutedIcon;
+    private readonly DrawingIcon _updateIcon;
 
-    public TrayIconController(MainViewModel viewModel, Action showWindow, Action showSettings, Action exit)
+    public TrayIconController(
+        MainViewModel viewModel,
+        UpdateViewModel updates,
+        Action showWindow,
+        Action showSettings,
+        Action showUpdate,
+        Action exit)
     {
         _viewModel = viewModel;
+        _updates = updates;
+        _showUpdate = showUpdate;
         _showWindow = showWindow;
         _showSettings = showSettings;
         _exit = exit;
@@ -39,6 +50,7 @@ internal sealed class TrayIconController : IDisposable
         var size = SystemMetrics.SmallIconSize;
         _normalIcon = LoadIcon("tray.ico", size);
         _mutedIcon = LoadIcon("tray-muted.ico", size);
+        _updateIcon = LoadIcon("tray-update.ico", size);
 
         _taskbarIcon = new TaskbarIcon
         {
@@ -51,6 +63,7 @@ internal sealed class TrayIconController : IDisposable
 
         _viewModel.PropertyChanged += OnStateChanged;
         _viewModel.Microphone.PropertyChanged += OnStateChanged;
+        _updates.PropertyChanged += OnStateChanged;
         LocalizationManager.Instance.PropertyChanged += OnStateChanged;
 
         UpdateIconAndToolTip();
@@ -61,10 +74,12 @@ internal sealed class TrayIconController : IDisposable
     {
         _viewModel.PropertyChanged -= OnStateChanged;
         _viewModel.Microphone.PropertyChanged -= OnStateChanged;
+        _updates.PropertyChanged -= OnStateChanged;
         LocalizationManager.Instance.PropertyChanged -= OnStateChanged;
         _taskbarIcon.Dispose();
         _normalIcon.Dispose();
         _mutedIcon.Dispose();
+        _updateIcon.Dispose();
     }
 
     private static DrawingIcon LoadIcon(string fileName, int size)
@@ -85,7 +100,10 @@ internal sealed class TrayIconController : IDisposable
         var loc = LocalizationManager.Instance;
         var microphone = _viewModel.Microphone;
 
-        _taskbarIcon.Icon = microphone.IsAvailable && microphone.IsMuted ? _mutedIcon : _normalIcon;
+        // The muted state matters more than an available update.
+        _taskbarIcon.Icon = microphone.IsAvailable && microphone.IsMuted
+            ? _mutedIcon
+            : _updates.IsUpdateAvailable ? _updateIcon : _normalIcon;
 
         var output = loc.Format("Tray_ToolTipOutput", _viewModel.CurrentOutputName ?? "–");
         var mic = !microphone.IsAvailable
@@ -103,6 +121,18 @@ internal sealed class TrayIconController : IDisposable
         var loc = LocalizationManager.Instance;
         var menu = _taskbarIcon.ContextMenu!;
         menu.Items.Clear();
+
+        if (_updates.IsUpdateAvailable)
+        {
+            var update = new MenuItem
+            {
+                Header = loc.Format("Tray_UpdateAvailable", _updates.AvailableVersion),
+                FontWeight = FontWeights.SemiBold,
+            };
+            update.Click += (_, _) => _showUpdate();
+            menu.Items.Add(update);
+            menu.Items.Add(new Separator());
+        }
 
         var outputs = _viewModel.Outputs.Where(o => o.IsAvailable && !o.Hidden).ToList();
         if (outputs.Count == 0)

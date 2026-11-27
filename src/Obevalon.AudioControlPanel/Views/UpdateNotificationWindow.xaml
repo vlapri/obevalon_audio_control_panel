@@ -1,0 +1,70 @@
+<Window x:Class="Obevalon.AudioControlPanel.Views.UpdateNotificationWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:loc="clr-namespace:Obevalon.AudioControlPanel.Localization"
+        xmlns:vm="clr-namespace:Obevalon.AudioControlPanel.ViewModels"
+        xmlns:core="clr-namespace:Obevalon.AudioControlPanel.Core;assembly=Obevalon.AudioControlPanel.Core"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=vm:UpdateViewModel}"
+        Title="{x:Static core:AppInfo.ProductName}"
+        Icon="/Assets/app.ico"
+        Width="380"
+        SizeToContent="Height"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        ShowActivated="False"
+        Topmost="True"
+        WindowStartupLocation="Manual"
+        Style="{StaticResource AppWindow}">
+  <Grid Margin="16">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="Auto" />
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+
+    <Image Source="/Assets/app.ico" Width="32" Height="32" VerticalAlignment="Top" RenderOptions.BitmapScalingMode="HighQuality" />
+
+    <StackPanel Grid.Column="1" Margin="12,0,0,0">
+      <TextBlock FontWeight="SemiBold" FontSize="14" TextWrapping="Wrap">
+        <Run Text="{loc:Loc Update_NewVersion}" /><Run Text=" " /><Run Text="{Binding AvailableVersion, Mode=OneWay}" />
+      </TextBlock>
+      <TextBlock Margin="0,4,0,0" Style="{StaticResource SecondaryText}" FontSize="12">
+        <Run Text="{loc:Loc Update_YourVersion}" /><Run Text=" " /><Run Text="{Binding CurrentVersion, Mode=OneWay}" /><Run Text=" · " /><Hyperlink Command="{Binding OpenReleaseNotesCommand}"><Run Text="{loc:Loc Update_WhatsNew}" /></Hyperlink>
+      </TextBlock>
+
+      <ProgressBar Margin="0,10,0,0" Height="4" Minimum="0" Maximum="100" Value="{Binding Progress, Mode=OneWay}">
+        <ProgressBar.Style>
+          <Style TargetType="ProgressBar" BasedOn="{StaticResource {x:Type ProgressBar}}">
+            <Setter Property="Visibility" Value="Collapsed" />
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding State}" Value="{x:Static vm:UpdateState.Downloading}">
+                <Setter Property="Visibility" Value="Visible" />
+              </DataTrigger>
+              <DataTrigger Binding="{Binding State}" Value="{x:Static vm:UpdateState.Installing}">
+                <Setter Property="Visibility" Value="Visible" />
+                <Setter Property="IsIndeterminate" Value="True" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </ProgressBar.Style>
+      </ProgressBar>
+
+      <TextBlock Margin="0,8,0,0" TextWrapping="Wrap" Text="{Binding Message}"
+                 Visibility="{Binding Message, Converter={StaticResource NullToCollapsed}}" />
+      <TextBlock Margin="0,4,0,0" Visibility="{Binding ManualDownloadUrl, Converter={StaticResource NullToCollapsed}}">
+        <Hyperlink Command="{Binding OpenManualDownloadCommand}"><Run Text="{loc:Loc Update_OpenDownloadPage}" /></Hyperlink>
+      </TextBlock>
+
+      <WrapPanel Margin="0,12,0,0" HorizontalAlignment="Right">
+        <Button Style="{StaticResource TextButton}" Margin="0,0,6,6" Content="{loc:Loc Update_Install}"
+                Command="{Binding InstallCommand}" IsDefault="True" />
+        <Button Style="{StaticResource TextButton}" Margin="0,0,6,6" Content="{loc:Loc Update_Later}"
+                Command="{Binding LaterCommand}" />
+        <Button Style="{StaticResource TextButton}" Margin="0,0,0,6" Content="{loc:Loc Update_Skip}"
+                Command="{Binding SkipCommand}" />
+      </WrapPanel>
+    </StackPanel>
+  </Grid>
+</Window>

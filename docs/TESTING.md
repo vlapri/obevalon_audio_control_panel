@@ -115,3 +115,19 @@ Pro přehrávání zvuku během testu stačí třeba video na YouTube.
 - [ ] Stejnou zkratku nejde přiřadit dvěma akcím (zobrazí se chyba).
 - [ ] Zkratka používaná jinou aplikací (nebo Windows, např. `Win+L`) zobrazí upozornění „Tuto zkratku používá jiná aplikace nebo Windows“.
 - [ ] Zkratky platí i po restartu (uloženo v `[Hotkeys]` v `settings.ini`).
+
+## M8 – Aktualizace
+Předpoklad: secret `UPDATE_SIGNING_KEY` je nastavený a existují dvě vydání (např. `v0.8.0` a `v0.8.1`).
+- [ ] Vydání obsahuje `update.json`, `update.json.sig`, exe a zip pro x64 i ARM64 a `SHA256SUMS.txt`.
+- [ ] Nainstalovaná starší verze asi 30 s po startu zobrazí vpravo dole okno „Je k dispozici nová verze“; ikona v systray dostane zelený odznak a v nabídce je položka „Aktualizovat na verzi …“.
+- [ ] Bez kliknutí na „Aktualizovat“ se nic nestáhne (ověřit v `%TEMP%\Obevalon\AudioControlPanel\update`).
+- [ ] „Co je nového“ otevře stránku vydání.
+- [ ] „Aktualizovat“ zobrazí průběh stahování, aplikace se restartuje v nové verzi bez UAC a zobrazí „Aktualizováno na verzi …“; `settings.ini` zůstal beze změny; `OACP.exe.old` po startu zmizí.
+- [ ] Byla-li aplikace při aktualizaci jen v systray, nová verze se spustí znovu jen do systray.
+- [ ] „Později“ okno zavře; při další automatické kontrole (za 24 h nebo po restartu) se nabídka objeví znovu.
+- [ ] „Přeskočit tuto verzi“ – o této verzi už aplikace neupozorní (ručně v Nastavení ji ale stále nabídne).
+- [ ] Nastavení → Aktualizace → „Zkontrolovat nyní“ ukáže „Máte nejnovější verzi“ nebo otevře nabídku; zobrazí čas poslední kontroly.
+- [ ] Vypnutá automatická kontrola → po startu se nic nekontroluje.
+- [ ] Aplikace ve `C:\Program Files\…` (bez práva zápisu) → „Aktualizovat“ zobrazí vysvětlení a odkaz na stránku ke stažení.
+- [ ] Bez internetu automatická kontrola nic nezobrazí; ruční kontrola ukáže chybu.
+- [ ] Podvržený `update.json` (např. přes `ManifestUrl` na upravený soubor) je odmítnut („neplatný podpis“).
