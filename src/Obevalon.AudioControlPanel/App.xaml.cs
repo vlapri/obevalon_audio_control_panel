@@ -8,7 +8,9 @@ using System.Windows;
 using System.Windows.Threading;
 using Obevalon.AudioControlPanel.Core;
 using Obevalon.AudioControlPanel.Core.Autostart;
+using Obevalon.AudioControlPanel.Core.Hotkeys;
 using Obevalon.AudioControlPanel.Core.Settings;
+using Obevalon.AudioControlPanel.Hotkeys;
 using Obevalon.AudioControlPanel.Localization;
 using Obevalon.AudioControlPanel.Platform.Autostart;
 using Obevalon.AudioControlPanel.Platform.CoreAudio;
@@ -34,6 +36,7 @@ public partial class App : Application
     private TrayIconController? _tray;
     private IAutostartService? _autostart;
     private SettingsWindow? _settingsWindow;
+    private HotkeyManager? _hotkeys;
     private bool _exiting;
 
     internal StartupOptions Options { get; private set; } = new();
@@ -87,6 +90,10 @@ public partial class App : Application
         _autostart = new RegistryAutostartService(Environment.ProcessPath ?? Path.Combine(AppContext.BaseDirectory, "OACP.exe"));
         _tray = new TrayIconController(_viewModel, ShowMainWindow, ShowSettings, ExitApplication);
 
+        _hotkeys = new HotkeyManager();
+        _hotkeys.HotkeyPressed += OnHotkeyPressed;
+        _hotkeys.Apply(_settings.Current.Hotkeys);
+
         // Autostart starts hidden in the tray (SPEC F3.6).
         if (!Options.StartInTray)
         {
@@ -98,6 +105,7 @@ public partial class App : Application
 
     protected override void OnExit(ExitEventArgs e)
     {
+        _hotkeys?.Dispose();
         _tray?.Dispose();
         _viewModel?.Dispose();
         _microphone?.Dispose();
@@ -130,7 +138,7 @@ public partial class App : Application
     /// <summary>Shows the settings window (one at a time).</summary>
     internal void ShowSettings()
     {
-        if (_autostart is null || _settings is null || _audio is null || _microphone is null || _exiting)
+        if (_autostart is null || _settings is null || _audio is null || _microphone is null || _hotkeys is null || _exiting)
         {
             return;
         }
@@ -141,7 +149,10 @@ public partial class App : Application
             return;
         }
 
-        _settingsWindow = new SettingsWindow { DataContext = new SettingsViewModel(_autostart, _settings, _audio, _microphone) };
+        // Release the hotkeys while the settings are open so they can be recorded again.
+        var hotkeys = _hotkeys;
+        hotkeys.Suspend();
+        _settingsWindow = new SettingsWindow { DataContext = new SettingsViewModel(_autostart, _settings, _audio, _microphone, hotkeys) };
         if (_window is { IsVisible: true })
         {
             _settingsWindow.Owner = _window;
@@ -151,7 +162,12 @@ public partial class App : Application
             _settingsWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
         }
 
-        _settingsWindow.Closed += (_, _) => _settingsWindow = null;
+        _settingsWindow.Closed += (_, _) =>
+        {
+            _settingsWindow = null;
+            hotkeys.Apply(_settings.Current.Hotkeys);
+            hotkeys.Resume();
+        };
         _settingsWindow.Show();
         _settingsWindow.Activate();
     }
@@ -187,6 +203,22 @@ public partial class App : Application
 
         _exiting = true;
         Dispatcher.BeginInvoke(Shutdown);
+    }
+
+    private void OnHotkeyPressed(object? sender, HotkeyAction action)
+    {
+        switch (action)
+        {
+            case HotkeyAction.NextOutput:
+                _viewModel?.NextOutput();
+                break;
+            case HotkeyAction.ToggleMicMute:
+                _viewModel?.Microphone.ToggleMuteCommand.Execute(null);
+                break;
+            case HotkeyAction.ShowWindow:
+                ShowMainWindow();
+                break;
+        }
     }
 
     /// <summary>Offers to fix autostart when the portable folder was moved (SPEC F4.4).</summary>

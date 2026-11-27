@@ -235,4 +235,25 @@ Nastavit ho na aktuální umístění?</value>
   <data name="Settings_ExitOnClose" xml:space="preserve">
     <value>Zavřením okna aplikaci ukončit (místo schování do systray)</value>
   </data>
+  <data name="Settings_HotkeysHeader" xml:space="preserve">
+    <value>Klávesové zkratky</value>
+  </data>
+  <data name="Settings_HotkeysHint" xml:space="preserve">
+    <value>Klikněte do pole a stiskněte kombinaci s Ctrl, Alt nebo Win. Backspace ji smaže. Zkratky fungují v celých Windows.</value>
+  </data>
+  <data name="Hotkey_ToggleMic" xml:space="preserve">
+    <value>Ztlumit / zapnout mikrofon</value>
+  </data>
+  <data name="Hotkey_ShowWindow" xml:space="preserve">
+    <value>Zobrazit okno</value>
+  </data>
+  <data name="Hotkey_Clear" xml:space="preserve">
+    <value>Odebrat zkratku</value>
+  </data>
+  <data name="Hotkey_InUse" xml:space="preserve">
+    <value>Tuto zkratku používá jiná aplikace nebo Windows.</value>
+  </data>
+  <data name="Hotkey_Duplicate" xml:space="preserve">
+    <value>Tato zkratka je už přiřazená jiné akci.</value>
+  </data>
 </root>

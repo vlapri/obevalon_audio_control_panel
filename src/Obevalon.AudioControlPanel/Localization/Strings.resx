@@ -235,4 +235,25 @@ Update it to the current location?</value>
   <data name="Settings_ExitOnClose" xml:space="preserve">
     <value>Closing the window exits the application (instead of hiding it to the tray)</value>
   </data>
+  <data name="Settings_HotkeysHeader" xml:space="preserve">
+    <value>Keyboard shortcuts</value>
+  </data>
+  <data name="Settings_HotkeysHint" xml:space="preserve">
+    <value>Click a box and press a combination with Ctrl, Alt or Win. Backspace clears it. Shortcuts work everywhere in Windows.</value>
+  </data>
+  <data name="Hotkey_ToggleMic" xml:space="preserve">
+    <value>Mute / unmute microphone</value>
+  </data>
+  <data name="Hotkey_ShowWindow" xml:space="preserve">
+    <value>Show window</value>
+  </data>
+  <data name="Hotkey_Clear" xml:space="preserve">
+    <value>Remove shortcut</value>
+  </data>
+  <data name="Hotkey_InUse" xml:space="preserve">
+    <value>This shortcut is used by another application or by Windows.</value>
+  </data>
+  <data name="Hotkey_Duplicate" xml:space="preserve">
+    <value>This shortcut is already assigned to another action.</value>
+  </data>
 </root>

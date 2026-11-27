@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:loc="clr-namespace:Obevalon.AudioControlPanel.Localization"
         xmlns:vm="clr-namespace:Obevalon.AudioControlPanel.ViewModels"
+        xmlns:controls="clr-namespace:Obevalon.AudioControlPanel.Controls"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=vm:SettingsViewModel}"
         Title="{loc:Loc Settings_Title}"
@@ -12,9 +13,11 @@
         Width="440"
         SizeToContent="Height"
         ResizeMode="NoResize"
+        MaxHeight="{Binding Source={x:Static SystemParameters.WorkArea}, Path=Height}"
         ShowInTaskbar="False"
         WindowStartupLocation="CenterOwner"
         Style="{StaticResource AppWindow}">
+  <ScrollViewer VerticalScrollBarVisibility="Auto" Focusable="False">
   <StackPanel x:Name="Root" Margin="16">
 
     <!-- General -->
@@ -50,6 +53,33 @@
     <CheckBox Margin="0,4,0,0" IsChecked="{Binding ShowSwitchOsd}" Content="{loc:Loc Settings_ShowOsd}" />
     <CheckBox Margin="0,4,0,0" IsChecked="{Binding ExitOnClose}" Content="{loc:Loc Settings_ExitOnClose}" />
 
+    <!-- Hotkeys -->
+    <TextBlock Style="{StaticResource SectionHeader}" Text="{loc:Loc Settings_HotkeysHeader}" />
+    <TextBlock Margin="0,0,0,6" TextWrapping="Wrap" Style="{StaticResource SecondaryText}" Text="{loc:Loc Settings_HotkeysHint}" />
+    <ItemsControl ItemsSource="{Binding Hotkeys}" Focusable="False" Grid.IsSharedSizeScope="True">
+      <ItemsControl.ItemTemplate>
+        <DataTemplate DataType="{x:Type vm:HotkeyItemViewModel}">
+          <StackPanel Margin="0,0,0,6">
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="HotkeyLabel" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+              </Grid.ColumnDefinitions>
+              <TextBlock VerticalAlignment="Center" Margin="0,0,12,0" Text="{Binding Label.Label}" />
+              <controls:HotkeyBox Grid.Column="1" Gesture="{Binding Gesture}"
+                                  AutomationProperties.Name="{Binding Label.Label}" />
+              <Button Grid.Column="2" Margin="4,0,0,0" Style="{StaticResource RowIconButton}" Content="&#xE711;"
+                      Command="{Binding ClearCommand}"
+                      ToolTip="{loc:Loc Hotkey_Clear}" AutomationProperties.Name="{loc:Loc Hotkey_Clear}" />
+            </Grid>
+            <TextBlock Text="{Binding Error}" Foreground="#E5484D" TextWrapping="Wrap" FontSize="11"
+                       Visibility="{Binding Error, Converter={StaticResource NullToCollapsed}}" />
+          </StackPanel>
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+    </ItemsControl>
+
     <!-- Startup -->
     <TextBlock Style="{StaticResource SectionHeader}" Text="{loc:Loc Settings_StartupHeader}" />
     <CheckBox IsChecked="{Binding AutostartEnabled}" Content="{loc:Loc Settings_Autostart}" />
@@ -81,4 +111,5 @@
     <Button Margin="0,16,0,0" HorizontalAlignment="Right" Style="{StaticResource TextButton}" IsCancel="True"
             Content="{loc:Loc Common_Close}" Click="OnCloseClick" />
   </StackPanel>
+  </ScrollViewer>
 </Window>

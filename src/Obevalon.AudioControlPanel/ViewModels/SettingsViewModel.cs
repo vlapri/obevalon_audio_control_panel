@@ -7,8 +7,10 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Obevalon.AudioControlPanel.Core.Audio;
 using Obevalon.AudioControlPanel.Core.Autostart;
+using Obevalon.AudioControlPanel.Core.Hotkeys;
 using Obevalon.AudioControlPanel.Core.Localization;
 using Obevalon.AudioControlPanel.Core.Settings;
+using Obevalon.AudioControlPanel.Hotkeys;
 using Obevalon.AudioControlPanel.Localization;
 using Obevalon.AudioControlPanel.Themes;
 
@@ -20,17 +22,28 @@ public sealed partial class SettingsViewModel : ObservableObject
     private readonly IAutostartService _autostart;
     private readonly SettingsManager _settings;
     private readonly IMicrophoneService _microphone;
+    private readonly HotkeyManager _hotkeys;
     private AutostartStatus _autostartStatus = AutostartStatus.NotRegistered;
 
     public SettingsViewModel(
         IAutostartService autostart,
         SettingsManager settings,
         IAudioDeviceService audio,
-        IMicrophoneService microphone)
+        IMicrophoneService microphone,
+        HotkeyManager hotkeys)
     {
         _autostart = autostart;
         _settings = settings;
         _microphone = microphone;
+        _hotkeys = hotkeys;
+
+        var keys = _settings.Current.Hotkeys;
+        Hotkeys =
+        [
+            CreateHotkey(HotkeyAction.NextOutput, "Outputs_Next", keys.NextOutput),
+            CreateHotkey(HotkeyAction.ToggleMicMute, "Hotkey_ToggleMic", keys.ToggleMicMute),
+            CreateHotkey(HotkeyAction.ShowWindow, "Hotkey_ShowWindow", keys.ShowWindow),
+        ];
 
         LanguageOptions =
         [
@@ -127,6 +140,45 @@ public sealed partial class SettingsViewModel : ObservableObject
         });
     }
 
+    // ---- Hotkeys ----
+
+    public IReadOnlyList<HotkeyItemViewModel> Hotkeys { get; }
+
+    private HotkeyItemViewModel CreateHotkey(HotkeyAction action, string labelKey, string? text)
+    {
+        var gesture = HotkeyGesture.Parse(text)?.ToString() ?? string.Empty;
+        var error = _hotkeys.Failed.Contains(action) ? LocalizationManager.Instance["Hotkey_InUse"] : null;
+        return new HotkeyItemViewModel(action, labelKey, gesture, error, ApplyHotkey);
+    }
+
+    /// <summary>Stores a recorded hotkey; returns an error message or null. Hotkeys are re-registered when the window closes.</summary>
+    private string? ApplyHotkey(HotkeyItemViewModel item, string text)
+    {
+        var gesture = HotkeyGesture.Parse(text);
+        if (gesture is not null && Hotkeys.Any(h => h != item && HotkeyGesture.Parse(h.Gesture) == gesture))
+        {
+            return LocalizationManager.Instance["Hotkey_Duplicate"];
+        }
+
+        var value = gesture?.ToString();
+        var keys = _settings.Current.Hotkeys;
+        switch (item.Action)
+        {
+            case HotkeyAction.NextOutput:
+                keys.NextOutput = value;
+                break;
+            case HotkeyAction.ToggleMicMute:
+                keys.ToggleMicMute = value;
+                break;
+            case HotkeyAction.ShowWindow:
+                keys.ShowWindow = value;
+                break;
+        }
+
+        SaveSettings();
+        return gesture is not null && !_hotkeys.IsAvailable(gesture) ? LocalizationManager.Instance["Hotkey_InUse"] : null;
+    }
+
     // ---- Startup ----
 
     public bool AutostartEnabled
@@ -218,6 +270,11 @@ public sealed partial class SettingsViewModel : ObservableObject
 
         apply(value);
         OnPropertyChanged(propertyName);
+        SaveSettings();
+    }
+
+    private void SaveSettings()
+    {
         if (!_settings.Save() && _settings.LastSaveError is { } error)
         {
             ErrorMessage = LocalizationManager.Instance.Format("Error_SettingsSaveFailed", error.Message);
