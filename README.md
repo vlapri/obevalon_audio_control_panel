@@ -27,12 +27,33 @@ from a compact window, from the system tray or with global hotkeys.
 2. Extract it to any folder you can write to (e.g. `C:\Tools\OACP`) and run `OACP.exe`.
 3. Optional: *Settings → Start at sign-in*.
 
-On the first start Windows SmartScreen may warn about an unknown publisher (the executable is not code-signed):
-choose *More info → Run anyway*.
+**Windows blocks the app ("unknown publisher")?** Releases are being moved to code signing through SignPath
+(see *Code signing policy* below). Until a release is signed, Windows 11 **Smart App Control** blocks it
+completely and SmartScreen shows a warning. For a release that is not signed yet you can:
+- SmartScreen warning: choose *More info → Run anyway*;
+- Smart App Control: *Windows Security → App & browser control → Smart App Control settings → Off*
+  (on some Windows 11 versions it cannot be turned back on without reinstalling Windows).
 
-### Privacy
-The only network request is the update check, which downloads the update manifest from this repository's
-GitHub Releases (at start and once a day; can be turned off). No telemetry, no user identifiers.
+Signed releases show *Publisher: SignPath Foundation* in the file properties.
+
+### Code signing policy
+Free code signing provided by [SignPath.io](https://about.signpath.io/), certificate by
+[SignPath Foundation](https://signpath.org/).
+
+- Committers and reviewers: [vlapri](https://github.com/vlapri) (Obevalon)
+- Approvers: [vlapri](https://github.com/vlapri) (Obevalon)
+
+Only executables built by the GitHub Actions release workflow from this repository's source code are signed.
+Every signing request is approved manually.
+
+### Privacy policy
+This program does not transfer any information to other networked systems except for the update check:
+when automatic update checks are enabled (default; can be turned off in Settings) or when you click
+*Check now*, it downloads the update manifest from this repository's GitHub Releases
+(`github.com`), and after you confirm an update it downloads the new version from there.
+These requests contain no personal data or identifiers beyond what any HTTPS request contains
+(IP address, the user agent `OACP/<version>`). There is no telemetry.
+Settings and the optional diagnostic log stay on your computer.
 
 ### Building from source
 Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0).
@@ -85,12 +106,28 @@ z kompaktního okna, ze systémové lišty nebo globálními klávesovými zkrat
 2. Rozbalte do libovolné složky, do které můžete zapisovat (např. `C:\Tools\OACP`), a spusťte `OACP.exe`.
 3. Volitelně: *Nastavení → Spouštět po přihlášení*.
 
-Při prvním spuštění může Windows SmartScreen upozornit na neznámého vydavatele (exe není podepsaný):
-zvolte *Další informace → Přesto spustit*.
+**Windows aplikaci blokuje („neznámý vydavatel“)?** Vydání přecházejí na digitální podpis přes SignPath
+(viz *Podepisování* níže). Dokud vydání podepsané není, **Inteligentní řízení aplikací** ve Windows 11
+ho úplně zablokuje a SmartScreen zobrazí varování. U dosud nepodepsaného vydání můžete:
+- varování SmartScreen: *Další informace → Přesto spustit*;
+- Inteligentní řízení aplikací: *Zabezpečení Windows → Řízení aplikací a prohlížeče → Nastavení
+  inteligentního řízení aplikací → Vypnuto* (na některých verzích Windows 11 ho pak nejde znovu zapnout
+  bez přeinstalace systému).
+
+Podepsaná vydání mají ve vlastnostech souboru *Vydavatel: SignPath Foundation*.
+
+### Podepisování
+Bezplatné podepisování kódu poskytuje [SignPath.io](https://about.signpath.io/), certifikát vydává
+[SignPath Foundation](https://signpath.org/). Podepisují se jen exe sestavená workflow GitHub Actions
+ze zdrojového kódu tohoto repozitáře a každou žádost o podpis schvaluje autor ručně.
+Role (správce kódu, revize, schvalování): [vlapri](https://github.com/vlapri) (Obevalon).
 
 ### Soukromí
-Jediný síťový požadavek je kontrola aktualizací – stažení manifestu z GitHub Releases tohoto repozitáře
-(při startu a jednou denně; lze vypnout). Žádná telemetrie, žádné identifikátory uživatele.
+Program nepřenáší žádné informace jinam s výjimkou kontroly aktualizací: při zapnuté automatické kontrole
+(výchozí, lze vypnout v Nastavení) nebo po kliknutí na *Zkontrolovat nyní* stáhne manifest aktualizace
+z GitHub Releases tohoto repozitáře (`github.com`) a po vašem potvrzení odtud stáhne novou verzi.
+Požadavky neobsahují osobní údaje ani identifikátory nad rámec běžného HTTPS požadavku (IP adresa,
+User-Agent `OACP/<verze>`). Žádná telemetrie. Nastavení i volitelný diagnostický log zůstávají v počítači.
 
 ### Licence
 [GNU GPL v3 nebo novější](LICENSE) © Obevalon

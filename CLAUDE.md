@@ -96,6 +96,11 @@ dotnet test
   Pushing a tag triggers `.github/workflows/release.yml`, which publishes the exe files,
   zips, `SHA256SUMS.txt` and the signed `update.json` to GitHub Releases. Tags with a
   suffix (`-beta.1`) become pre-releases, which auto-update ignores.
+- This cloud environment cannot push tags: start releases with the workflow's manual trigger
+  (`release.yml`, input `version`).
+- Executables are Authenticode-signed through SignPath (SignPath Foundation certificate) when the
+  `SIGNPATH_*` repository variables are set; each signing request is approved manually by the author.
+  `update.json` hashes are computed from the signed files. See `docs/RELEASING.md`.
 
 ## Repository map
 

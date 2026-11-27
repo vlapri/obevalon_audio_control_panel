@@ -14,6 +14,8 @@ on:
 
 permissions:
   contents: write
+  # SignPath reads the job details and downloads the unsigned artifact with the workflow token.
+  actions: read
 
 env:
   DOTNET_NOLOGO: true
@@ -54,16 +56,65 @@ jobs:
         shell: pwsh
         run: |
           $v = '${{ steps.version.outputs.version }}'
-          New-Item -ItemType Directory -Force dist | Out-Null
+          New-Item -ItemType Directory -Force unsigned | Out-Null
           foreach ($rid in 'win-x64', 'win-arm64') {
             dotnet publish src/Obevalon.AudioControlPanel -c Release -r $rid -p:PublishSingleFile=true -p:Version=$v -o "out/$rid"
             if ($LASTEXITCODE -ne 0) { throw "Publish failed for $rid." }
+            Copy-Item "out/$rid/OACP.exe" "unsigned/OACP-$v-$rid.exe"
+          }
+
+      # Code signing through SignPath (free for open source, certificate by SignPath Foundation).
+      # Enabled when the repository variable SIGNPATH_ORGANIZATION_ID is set; see docs/RELEASING.md.
+      # Without it the release is built unsigned (Windows Smart App Control will block it).
+      - name: Upload unsigned executables for signing
+        id: unsigned
+        if: vars.SIGNPATH_ORGANIZATION_ID != ''
+        uses: actions/upload-artifact@v5
+        with:
+          name: unsigned-executables
+          path: unsigned/
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Sign executables (SignPath)
+        if: vars.SIGNPATH_ORGANIZATION_ID != ''
+        uses: signpath/github-action-submit-signing-request@v3
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ vars.SIGNPATH_SIGNING_POLICY_SLUG || 'release-signing' }}
+          artifact-configuration-slug: ${{ vars.SIGNPATH_ARTIFACT_CONFIGURATION_SLUG }}
+          github-artifact-id: ${{ steps.unsigned.outputs.artifact-id }}
+          wait-for-completion: true
+          # Release signing requests are approved manually in SignPath.
+          wait-for-completion-timeout-in-seconds: 3600
+          output-artifact-directory: signed
+
+      - name: Package
+        shell: pwsh
+        env:
+          SIGNING_ENABLED: ${{ vars.SIGNPATH_ORGANIZATION_ID != '' }}
+        run: |
+          $v = '${{ steps.version.outputs.version }}'
+          $signed = $env:SIGNING_ENABLED -eq 'true'
+          if (-not $signed) { Write-Output '::warning::SignPath is not configured, the executables are NOT code-signed.' }
+          New-Item -ItemType Directory -Force dist | Out-Null
+          foreach ($rid in 'win-x64', 'win-arm64') {
+            $exe = if ($signed) { "signed/OACP-$v-$rid.exe" } else { "unsigned/OACP-$v-$rid.exe" }
+            if (-not (Test-Path $exe)) { throw "Missing $exe" }
+            if ($signed) {
+              $signature = Get-AuthenticodeSignature $exe
+              if ($signature.Status -ne 'Valid') { throw "$exe is not validly signed: $($signature.Status) $($signature.StatusMessage)" }
+              Write-Output "$exe signed by: $($signature.SignerCertificate.Subject)"
+            }
 
             # Plain exe (downloaded by the in-app updater) and a zip for manual download.
-            Copy-Item "out/$rid/OACP.exe" "dist/OACP-$v-$rid.exe"
+            Copy-Item $exe "dist/OACP-$v-$rid.exe"
             $staging = "staging/$rid"
             New-Item -ItemType Directory -Force $staging | Out-Null
-            Copy-Item "out/$rid/OACP.exe", LICENSE, README.md $staging
+            Copy-Item $exe "$staging/OACP.exe"
+            Copy-Item LICENSE, README.md $staging
             Compress-Archive -Path "$staging/*" -DestinationPath "dist/OACP-$v-$rid.zip"
           }
 
