@@ -49,6 +49,14 @@ starting any work. If a requirement changes, update SPEC.md first, then the code
    Never call back into Core Audio from inside an `IMMNotificationClient` callback.
 7. Each source file starts with `// SPDX-License-Identifier: GPL-3.0-or-later`.
 
+## Notes
+
+- The WPF Fluent theme (`Application.ThemeMode`) is experimental in .NET 10; `WPF0001` is suppressed in the
+  app project. Custom styles must use Fluent color resources via `DynamicResource` (e.g. `TextFillColorPrimaryBrush`).
+- Log with `AppLog` (off by default; `--log` or `Logging=true`). Never log personal data beyond device names.
+- The trusted update signing public keys are in `Core/Updates/update-signing-keys.pem`; see `docs/RELEASING.md`
+  before changing them.
+
 ## Code style
 
 - `Nullable` enabled, `TreatWarningsAsErrors` in Release, .NET analyzers on, follow `.editorconfig`.
@@ -93,9 +101,12 @@ dotnet test
 
 See SPEC.md §6 for the full tree. In short:
 
-- `src/Obevalon.AudioControlPanel/` – WPF app (Views, ViewModels, Tray, Themes, Localization)
-- `src/Obevalon.AudioControlPanel.Core/` – models, interfaces, INI settings, cycle and ordering logic, update logic
-- `src/Obevalon.AudioControlPanel.Platform/` – Core Audio interop, autostart, hotkeys, exe-swap installer, system theme and language
+- `src/Obevalon.AudioControlPanel/` – WPF app: `App.xaml.cs` (composition and lifecycle), Views, ViewModels,
+  Tray, Hotkeys (HotkeyManager), Themes (Fluent ThemeMode), Localization, Controls
+- `src/Obevalon.AudioControlPanel.Core/` – models, interfaces, INI settings, output catalog and cycle logic,
+  autostart command, hotkey gestures, update logic (versions, manifest, signature, download), AppLog
+- `src/Obevalon.AudioControlPanel.Platform/` – Core Audio COM interop, registry autostart, RegisterHotKey,
+  exe-swap update installer, .NET runtime probe, single instance
 - `tests/Obevalon.AudioControlPanel.Core.Tests/` – xUnit tests
-- `build/` – release helper scripts (update manifest and signature)
+- `build/` – `make-update-manifest.ps1` (release: update.json + signature), `render-icons.mjs` (icons)
 - `docs/` – SPEC, RELEASING, TESTING

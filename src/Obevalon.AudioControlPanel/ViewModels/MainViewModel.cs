@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Obevalon.AudioControlPanel.Core.Audio;
+using Obevalon.AudioControlPanel.Core.Diagnostics;
 using Obevalon.AudioControlPanel.Core.Logic;
 using Obevalon.AudioControlPanel.Core.Settings;
 using Obevalon.AudioControlPanel.Localization;
@@ -26,6 +27,9 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         _audio.DefaultDeviceChanged += OnDefaultDeviceChanged;
         RefreshOutputs();
     }
+
+    /// <summary>Raised after this application switched the default output (argument: display name).</summary>
+    public event EventHandler<string>? OutputSwitched;
 
     public ObservableCollection<OutputDeviceViewModel> Outputs { get; } = [];
 
@@ -168,6 +172,11 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
             _audio.SetDefaultDevice(deviceId, _settings.Current.SwitchCommunicationsDevice);
             ErrorMessage = null;
             InfoMessage = null;
+
+            var name = _lastEntries
+                .FirstOrDefault(e => string.Equals(e.Id, deviceId, StringComparison.OrdinalIgnoreCase))?.DisplayName ?? deviceId;
+            AppLog.Info($"Switched output to \"{name}\"");
+            OutputSwitched?.Invoke(this, name);
         }
         catch (COMException ex)
         {
@@ -253,6 +262,9 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
             .FirstOrDefault(o => string.Equals(o.Id, e.DeviceId, StringComparison.OrdinalIgnoreCase))?.DisplayName;
     }
 
-    private void ReportError(string messageKey, Exception ex) =>
+    private void ReportError(string messageKey, Exception ex)
+    {
+        AppLog.Error(messageKey, ex);
         ErrorMessage = LocalizationManager.Instance.Format(messageKey, ex.Message);
+    }
 }

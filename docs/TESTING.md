@@ -131,3 +131,15 @@ Předpoklad: secret `UPDATE_SIGNING_KEY` je nastavený a existují dvě vydání
 - [ ] Aplikace ve `C:\Program Files\…` (bez práva zápisu) → „Aktualizovat“ zobrazí vysvětlení a odkaz na stránku ke stažení.
 - [ ] Bez internetu automatická kontrola nic nezobrazí; ruční kontrola ukáže chybu.
 - [ ] Podvržený `update.json` (např. přes `ManifestUrl` na upravený soubor) je odmítnut („neplatný podpis“).
+
+## M9 – Dokončení
+- [ ] Ikona „i“ v hlavním okně i „O aplikaci…“ v nabídce systray otevře okno O aplikaci: název, verze, autor Obevalon, odkaz na GitHub, text licence a odkaz na ni, „Zkontrolovat nyní“.
+- [ ] Přepnutí výstupu z nabídky v systray nebo klávesovou zkratkou zobrazí nad hlavním panelem na ~1,5 s oznámení s názvem výstupu; nekrade fokus.
+- [ ] Ztlumení/zapnutí mikrofonu zkratkou nebo z nabídky zobrazí oznámení „Mikrofon ztlumen/zapnut“.
+- [ ] Při práci přímo v hlavním okně se oznámení nezobrazuje; s vypnutým „Po přepnutí zobrazit krátké oznámení“ se nezobrazuje nikdy.
+- [ ] `OACP.exe --log` nebo volba „Zapisovat diagnostický log“ vytvoří `logs\oacp-RRRR-MM-DD.log` vedle `settings.ini` se záznamy o startu, přepnutích a chybách.
+
+## Před každým vydáním
+- [ ] Projít sekce M1–M9 na Windows 11 (x64), hlavní body na Windows 10 22H2.
+- [ ] Dlouhodobý běh: aplikace běží celý den v systray, přepínání a zkratky stále fungují, paměť nenarůstá.
+- [ ] Přepínání při vypnutém/zapnutém projektoru, uspání a probuzení PC, odpojení USB/Bluetooth zařízení.

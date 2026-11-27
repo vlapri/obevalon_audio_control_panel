@@ -35,6 +35,9 @@ public sealed class AppSettings
 
     public bool ShowHiddenDevices { get; set; }
 
+    /// <summary>Write a diagnostic log (logs\ next to the settings file).</summary>
+    public bool Logging { get; set; }
+
     /// <summary>Controlled microphone, or null for the system default one.</summary>
     public string? MicrophoneDeviceId { get; set; }
 

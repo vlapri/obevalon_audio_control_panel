@@ -20,6 +20,8 @@ public static class AppInfo
 
     public const string LicenseName = "GNU GPL v3";
 
+    public const string LicenseUrl = RepositoryUrl + "/blob/main/LICENSE";
+
     /// <summary>Application version, e.g. "1.2.0" or "0.0.0-dev" for local builds.</summary>
     public static string Version { get; } = ReadVersion(Assembly.GetEntryAssembly() ?? typeof(AppInfo).Assembly);
 

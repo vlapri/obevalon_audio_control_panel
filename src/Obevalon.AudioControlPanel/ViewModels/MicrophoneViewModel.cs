@@ -21,6 +21,9 @@ public sealed partial class MicrophoneViewModel : ObservableObject, IDisposable
         SyncFromService();
     }
 
+    /// <summary>Raised after the user toggled mute here, in the tray or by a hotkey (argument: muted).</summary>
+    public event EventHandler<bool>? MuteToggled;
+
     /// <summary>Volume in percent (0–100).</summary>
     [ObservableProperty]
     private double _volume;
@@ -40,6 +43,7 @@ public sealed partial class MicrophoneViewModel : ObservableObject, IDisposable
         try
         {
             _microphone.ToggleMute();
+            MuteToggled?.Invoke(this, _microphone.State.IsMuted);
         }
         catch (COMException ex)
         {
