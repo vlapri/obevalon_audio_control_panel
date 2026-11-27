@@ -546,7 +546,7 @@ Stav: ✅ = hotovo, 🧪 = implementováno, čeká na ověření na reálném HW
 | **M0 – Kostra a CI** ✅ | Solution, 3 projekty + testy, `Directory.Build.props`, `global.json`, `.editorconfig`, `app.manifest`, prázdné okno, `build.yml` + `release.yml`, README | Tag `v0.1.0` vytvoří Release s (prázdným) exe – ověření celé pipeline |
 | **M1 – Core Audio** 🧪 | COM interop, `AudioDeviceService` (výpis, výchozí, přepnutí včetně komunikační role, notifikace), `MicrophoneService` (hlasitost, mute, callback) | Funkční služby ověřené na reálném HW |
 | **M2 – Nastavení a logika** ✅ | `IniDocument`, `IniSettingsStore`, `SettingsPathResolver` (portable/APPDATA), `DeviceCatalog`, `CycleSelector`, řazení + jednotkové testy | Zelené testy |
-| **M3 – Hlavní okno** | Seznam výstupů (název, poznámka, stav, aktuální), editace názvu/poznámky, pořadí, „v cyklu“, „skrýt“, tlačítko „Další výstup“, sekce mikrofonu (posuvník, mute) | Použitelná aplikace z okna |
+| **M3 – Hlavní okno** 🧪 | Seznam výstupů (název, poznámka, stav, aktuální), editace názvu/poznámky, pořadí, „v cyklu“, „skrýt“, tlačítko „Další výstup“, sekce mikrofonu (posuvník, mute) | Použitelná aplikace z okna |
 | **M4 – Systray a životní cyklus** | Ikona, tooltip, levý/pravý klik, kontextové menu, ikona mute, minimalizace/zavření do tray, `--tray`, jediná instance | Aplikace žije v systray |
 | **M5 – Autostart** | Registr HKCU Run, StartupApproved, kontrola a oprava cesty | Autostart bez UAC |
 | **M6 – Lokalizace a motivy** | resx CZ/EN, autodetekce + přepnutí za běhu, Light/Dark + auto, tmavý titulek, okno Nastavení | Dvojjazyčná aplikace s motivy |

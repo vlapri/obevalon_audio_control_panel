@@ -53,6 +53,7 @@ public partial class App : Application
         // The tray icon comes in milestone M4; until then the window is always shown,
         // otherwise "--tray" would leave an invisible process without a way to exit.
         var window = new MainWindow { DataContext = _viewModel };
+        window.RestorePosition(_settings.Current.WindowLeft, _settings.Current.WindowTop);
         MainWindow = window;
         window.Show();
     }

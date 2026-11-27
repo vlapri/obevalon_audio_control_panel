@@ -80,4 +80,58 @@
   <data name="Error_SettingsSaveFailed" xml:space="preserve">
     <value>Nastavení se nepodařilo uložit: {0}</value>
   </data>
+  <data name="Outputs_Next" xml:space="preserve">
+    <value>Další výstup</value>
+  </data>
+  <data name="Outputs_NextTooltip" xml:space="preserve">
+    <value>Přepnout na další výstup v cyklu</value>
+  </data>
+  <data name="Outputs_ShowHidden" xml:space="preserve">
+    <value>Zobrazit skryté</value>
+  </data>
+  <data name="Output_InCycleOn" xml:space="preserve">
+    <value>V cyklu – kliknutím vyřadit</value>
+  </data>
+  <data name="Output_InCycleOff" xml:space="preserve">
+    <value>Mimo cyklus – kliknutím zařadit</value>
+  </data>
+  <data name="Output_MoveUp" xml:space="preserve">
+    <value>Posunout nahoru</value>
+  </data>
+  <data name="Output_MoveDown" xml:space="preserve">
+    <value>Posunout dolů</value>
+  </data>
+  <data name="Output_Edit" xml:space="preserve">
+    <value>Přejmenovat a přidat poznámku</value>
+  </data>
+  <data name="Output_Hide" xml:space="preserve">
+    <value>Skrýt</value>
+  </data>
+  <data name="Output_Unhide" xml:space="preserve">
+    <value>Znovu zobrazit</value>
+  </data>
+  <data name="Output_Remove" xml:space="preserve">
+    <value>Odebrat ze seznamu</value>
+  </data>
+  <data name="Output_Hidden" xml:space="preserve">
+    <value>Skryté</value>
+  </data>
+  <data name="Output_NameLabel" xml:space="preserve">
+    <value>Název (prázdný = systémový název)</value>
+  </data>
+  <data name="Output_NoteLabel" xml:space="preserve">
+    <value>Poznámka</value>
+  </data>
+  <data name="Output_SystemName" xml:space="preserve">
+    <value>Systémový název</value>
+  </data>
+  <data name="Common_Save" xml:space="preserve">
+    <value>Uložit</value>
+  </data>
+  <data name="Common_Cancel" xml:space="preserve">
+    <value>Zrušit</value>
+  </data>
+  <data name="Info_CycleNeedsTwo" xml:space="preserve">
+    <value>Pro přepínání dokola jsou potřeba alespoň dva dostupné výstupy. Označte je ikonou cyklu.</value>
+  </data>
 </root>

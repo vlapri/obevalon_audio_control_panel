@@ -56,3 +56,17 @@ Pro přehrávání zvuku během testu stačí třeba video na YouTube.
   - `Language=en` / `Language=cs` přepne jazyk.
 - [ ] Poškozený nebo nesmyslný `settings.ini` nezpůsobí pád; použijí se výchozí hodnoty.
 - [ ] Výstup, který už v systému není (např. po výměně ovladače), zůstane v seznamu šedý se stavem „Chybí“.
+
+## M3 – Hlavní okno
+- [ ] Po najetí myší na řádek výstupu se objeví tlačítka: nahoru, dolů, přejmenovat, skrýt (u chybějícího výstupu i odebrat).
+- [ ] Šipky nahoru a dolů mění pořadí; pořadí zůstane i po restartu aplikace.
+- [ ] Ikona cyklu vpravo zapne nebo vypne zařazení do cyklu (zvýrazněná = v cyklu).
+- [ ] „Další výstup“ přepíná dokola mezi výstupy v cyklu v pořadí seznamu; odpojené a skryté přeskakuje.
+- [ ] Když v cyklu nic není, „Další výstup“ přepíná mezi všemi zobrazenými dostupnými výstupy.
+- [ ] Při méně než dvou dostupných výstupech v cyklu se zobrazí vysvětlující text.
+- [ ] Tužka otevře úpravu názvu a poznámky; Enter nebo „Uložit“ uloží, Esc nebo „Zrušit“ zahodí změny.
+- [ ] Prázdný název vrátí systémový název; poznámka se zobrazí pod názvem.
+- [ ] Skrytý výstup zmizí; se zaškrtnutým „Zobrazit skryté“ je vidět kurzívou s popiskem „Skryté“ a jde znovu zobrazit.
+- [ ] Chybějící výstup jde odebrat ze seznamu.
+- [ ] Okno se po restartu otevře na stejném místě; po odpojení monitoru se otevře na středu obrazovky.
+- [ ] Všechny změny se okamžitě propíšou do `settings.ini`.

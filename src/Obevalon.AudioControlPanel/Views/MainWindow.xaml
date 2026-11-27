@@ -30,36 +30,139 @@
     </StackPanel>
 
     <!-- Audio outputs -->
-    <TextBlock Style="{StaticResource SectionHeader}" Text="{loc:Loc Outputs_Header}" />
+    <Grid Margin="0,16,0,6">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
+      <TextBlock Style="{StaticResource SectionHeader}" Margin="0" VerticalAlignment="Center" Text="{loc:Loc Outputs_Header}" />
+      <CheckBox Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0" FontSize="11"
+                IsChecked="{Binding ShowHiddenDevices}" Content="{loc:Loc Outputs_ShowHidden}" />
+      <Button Grid.Column="2" Style="{StaticResource TextButton}" Command="{Binding NextOutputCommand}"
+              ToolTip="{loc:Loc Outputs_NextTooltip}">
+        <StackPanel Orientation="Horizontal">
+          <TextBlock Text="&#xE8EE;" FontFamily="{StaticResource IconFont}" VerticalAlignment="Center" Margin="0,0,6,0" />
+          <TextBlock Text="{loc:Loc Outputs_Next}" />
+        </StackPanel>
+      </Button>
+    </Grid>
+
     <ItemsControl ItemsSource="{Binding Outputs}" Focusable="False">
       <ItemsControl.ItemTemplate>
         <DataTemplate DataType="{x:Type vm:OutputDeviceViewModel}">
-          <Button Style="{StaticResource ListRowButton}" Command="{Binding SwitchCommand}" ToolTip="{Binding SystemName}"
-                  ToolTipService.ShowOnDisabled="True">
-            <Grid>
+          <Grid x:Name="Row" Background="Transparent">
+
+            <!-- Normal view -->
+            <Grid x:Name="NormalView">
               <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="24" />
                 <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
               </Grid.ColumnDefinitions>
 
-              <TextBlock x:Name="Check" Text="&#xE73E;" FontFamily="{StaticResource IconFont}"
-                         Foreground="{DynamicResource {x:Static SystemColors.HotTrackBrushKey}}"
-                         VerticalAlignment="Center" Visibility="Hidden" />
+              <Button Style="{StaticResource ListRowButton}" Command="{Binding SwitchCommand}"
+                      ToolTip="{Binding SystemName}" ToolTipService.ShowOnDisabled="True">
+                <Grid>
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="24" />
+                    <ColumnDefinition Width="*" />
+                  </Grid.ColumnDefinitions>
 
-              <StackPanel Grid.Column="1">
-                <TextBlock x:Name="DeviceName" Text="{Binding DisplayName}" TextTrimming="CharacterEllipsis" />
-                <TextBlock Text="{Binding Note}" Style="{StaticResource SecondaryText}" TextTrimming="CharacterEllipsis"
-                           Visibility="{Binding HasNote, Converter={StaticResource BoolToVisibility}}" />
-                <TextBlock x:Name="Status" Style="{StaticResource SecondaryText}" Visibility="Collapsed" />
+                  <TextBlock x:Name="Check" Text="&#xE73E;" FontFamily="{StaticResource IconFont}"
+                             Foreground="{DynamicResource {x:Static SystemColors.HotTrackBrushKey}}"
+                             VerticalAlignment="Center" Visibility="Hidden" />
+
+                  <StackPanel Grid.Column="1">
+                    <TextBlock x:Name="DeviceName" Text="{Binding DisplayName}" TextTrimming="CharacterEllipsis" />
+                    <TextBlock Text="{Binding Note}" Style="{StaticResource SecondaryText}" TextTrimming="CharacterEllipsis"
+                               Visibility="{Binding HasNote, Converter={StaticResource BoolToVisibility}}" />
+                    <TextBlock x:Name="Status" Style="{StaticResource SecondaryText}" Visibility="Collapsed" />
+                  </StackPanel>
+                </Grid>
+              </Button>
+
+              <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                <!-- Actions shown on hover or keyboard focus -->
+                <StackPanel x:Name="Actions" Orientation="Horizontal" Visibility="Hidden">
+                  <Button x:Name="RemoveButton" Style="{StaticResource RowIconButton}" Content="&#xE74D;"
+                          Command="{Binding RemoveCommand}" Visibility="Collapsed"
+                          ToolTip="{loc:Loc Output_Remove}" AutomationProperties.Name="{loc:Loc Output_Remove}" />
+                  <Button Style="{StaticResource RowIconButton}" Content="&#xE70E;" Command="{Binding MoveUpCommand}"
+                          ToolTip="{loc:Loc Output_MoveUp}" AutomationProperties.Name="{loc:Loc Output_MoveUp}" />
+                  <Button Style="{StaticResource RowIconButton}" Content="&#xE70D;" Command="{Binding MoveDownCommand}"
+                          ToolTip="{loc:Loc Output_MoveDown}" AutomationProperties.Name="{loc:Loc Output_MoveDown}" />
+                  <Button Style="{StaticResource RowIconButton}" Content="&#xE70F;" Command="{Binding BeginEditCommand}"
+                          ToolTip="{loc:Loc Output_Edit}" AutomationProperties.Name="{loc:Loc Output_Edit}" />
+                  <Button x:Name="HideButton" Style="{StaticResource RowIconButton}" Content="&#xED1A;"
+                          Command="{Binding ToggleHiddenCommand}"
+                          ToolTip="{loc:Loc Output_Hide}" AutomationProperties.Name="{loc:Loc Output_Hide}" />
+                </StackPanel>
+
+                <!-- Cycle membership is state, so it is always visible -->
+                <Button x:Name="CycleButton" Style="{StaticResource RowIconButton}" Content="&#xE8EE;"
+                        Command="{Binding ToggleCycleCommand}" Opacity="0.35"
+                        ToolTip="{loc:Loc Output_InCycleOff}" AutomationProperties.Name="{loc:Loc Output_InCycleOff}" />
               </StackPanel>
             </Grid>
-          </Button>
+
+            <!-- Edit view -->
+            <Border x:Name="EditView" Visibility="Collapsed" Padding="8" CornerRadius="4" Background="#0F808080">
+              <StackPanel>
+                <TextBlock Style="{StaticResource SecondaryText}">
+                  <Run Text="{loc:Loc Output_SystemName}" /><Run Text=": " /><Run Text="{Binding SystemName, Mode=OneWay}" />
+                </TextBlock>
+                <TextBlock Text="{loc:Loc Output_NameLabel}" Margin="0,8,0,2" />
+                <TextBox Text="{Binding EditName, UpdateSourceTrigger=PropertyChanged}" Padding="2">
+                  <TextBox.InputBindings>
+                    <KeyBinding Key="Enter" Command="{Binding SaveEditCommand}" />
+                    <KeyBinding Key="Escape" Command="{Binding CancelEditCommand}" />
+                  </TextBox.InputBindings>
+                </TextBox>
+                <TextBlock Text="{loc:Loc Output_NoteLabel}" Margin="0,8,0,2" />
+                <TextBox Text="{Binding EditNote, UpdateSourceTrigger=PropertyChanged}" Padding="2">
+                  <TextBox.InputBindings>
+                    <KeyBinding Key="Enter" Command="{Binding SaveEditCommand}" />
+                    <KeyBinding Key="Escape" Command="{Binding CancelEditCommand}" />
+                  </TextBox.InputBindings>
+                </TextBox>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+                  <Button Style="{StaticResource TextButton}" Content="{loc:Loc Common_Save}" Command="{Binding SaveEditCommand}" />
+                  <Button Style="{StaticResource TextButton}" Content="{loc:Loc Common_Cancel}" Command="{Binding CancelEditCommand}" Margin="6,0,0,0" />
+                </StackPanel>
+              </StackPanel>
+            </Border>
+          </Grid>
+
           <DataTemplate.Triggers>
+            <Trigger SourceName="Row" Property="IsMouseOver" Value="True">
+              <Setter TargetName="Actions" Property="Visibility" Value="Visible" />
+            </Trigger>
+            <Trigger SourceName="Row" Property="IsKeyboardFocusWithin" Value="True">
+              <Setter TargetName="Actions" Property="Visibility" Value="Visible" />
+            </Trigger>
+            <DataTrigger Binding="{Binding IsEditing}" Value="True">
+              <Setter TargetName="NormalView" Property="Visibility" Value="Collapsed" />
+              <Setter TargetName="EditView" Property="Visibility" Value="Visible" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding InCycle}" Value="True">
+              <Setter TargetName="CycleButton" Property="Opacity" Value="1" />
+              <Setter TargetName="CycleButton" Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HotTrackBrushKey}}" />
+              <Setter TargetName="CycleButton" Property="ToolTip" Value="{loc:Loc Output_InCycleOn}" />
+              <Setter TargetName="CycleButton" Property="AutomationProperties.Name" Value="{loc:Loc Output_InCycleOn}" />
+            </DataTrigger>
             <DataTrigger Binding="{Binding IsDefault}" Value="True">
               <Setter TargetName="Check" Property="Visibility" Value="Visible" />
               <Setter TargetName="DeviceName" Property="FontWeight" Value="SemiBold" />
               <Setter TargetName="Status" Property="Visibility" Value="Visible" />
               <Setter TargetName="Status" Property="Text" Value="{loc:Loc Output_IsDefault}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Hidden}" Value="True">
+              <Setter TargetName="DeviceName" Property="FontStyle" Value="Italic" />
+              <Setter TargetName="Status" Property="Visibility" Value="Visible" />
+              <Setter TargetName="Status" Property="Text" Value="{loc:Loc Output_Hidden}" />
+              <Setter TargetName="HideButton" Property="Content" Value="&#xE890;" />
+              <Setter TargetName="HideButton" Property="ToolTip" Value="{loc:Loc Output_Unhide}" />
+              <Setter TargetName="HideButton" Property="AutomationProperties.Name" Value="{loc:Loc Output_Unhide}" />
             </DataTrigger>
             <DataTrigger Binding="{Binding State}" Value="{x:Static audio:AudioDeviceState.Disabled}">
               <Setter TargetName="DeviceName" Property="Opacity" Value="0.5" />
@@ -71,15 +174,16 @@
               <Setter TargetName="Status" Property="Visibility" Value="Visible" />
               <Setter TargetName="Status" Property="Text" Value="{loc:Loc DeviceState_Unplugged}" />
             </DataTrigger>
-            <DataTrigger Binding="{Binding IsMissing}" Value="True">
-              <Setter TargetName="DeviceName" Property="Opacity" Value="0.5" />
-              <Setter TargetName="Status" Property="Visibility" Value="Visible" />
-              <Setter TargetName="Status" Property="Text" Value="{loc:Loc DeviceState_Missing}" />
-            </DataTrigger>
             <DataTrigger Binding="{Binding State}" Value="{x:Static audio:AudioDeviceState.NotPresent}">
               <Setter TargetName="DeviceName" Property="Opacity" Value="0.5" />
               <Setter TargetName="Status" Property="Visibility" Value="Visible" />
               <Setter TargetName="Status" Property="Text" Value="{loc:Loc DeviceState_NotPresent}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding IsMissing}" Value="True">
+              <Setter TargetName="DeviceName" Property="Opacity" Value="0.5" />
+              <Setter TargetName="Status" Property="Visibility" Value="Visible" />
+              <Setter TargetName="Status" Property="Text" Value="{loc:Loc DeviceState_Missing}" />
+              <Setter TargetName="RemoveButton" Property="Visibility" Value="Visible" />
             </DataTrigger>
           </DataTemplate.Triggers>
         </DataTemplate>
@@ -87,6 +191,8 @@
     </ItemsControl>
     <TextBlock Text="{loc:Loc Outputs_None}" Margin="8,0" Style="{StaticResource SecondaryText}"
                Visibility="{Binding HasOutputs, Converter={StaticResource InverseBoolToVisibility}}" />
+    <TextBlock Text="{Binding InfoMessage}" Margin="8,6,8,0" TextWrapping="Wrap" Style="{StaticResource SecondaryText}"
+               Visibility="{Binding InfoMessage, Converter={StaticResource NullToCollapsed}}" />
 
     <!-- Microphone -->
     <TextBlock Style="{StaticResource SectionHeader}" Text="{loc:Loc Microphone_Header}" />
