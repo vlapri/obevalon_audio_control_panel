@@ -60,6 +60,8 @@ public partial class MainWindow : Window
         }
     }
 
+    private void OnSettingsClick(object sender, RoutedEventArgs e) => ((App)Application.Current).ShowSettings();
+
     private void OnRequestNavigate(object sender, RequestNavigateEventArgs e)
     {
         Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });

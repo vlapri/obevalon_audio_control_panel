@@ -3,11 +3,14 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Security;
 using System.Windows;
 using System.Windows.Threading;
 using Obevalon.AudioControlPanel.Core;
+using Obevalon.AudioControlPanel.Core.Autostart;
 using Obevalon.AudioControlPanel.Core.Settings;
 using Obevalon.AudioControlPanel.Localization;
+using Obevalon.AudioControlPanel.Platform.Autostart;
 using Obevalon.AudioControlPanel.Platform.CoreAudio;
 using Obevalon.AudioControlPanel.Platform.Shell;
 using Obevalon.AudioControlPanel.Tray;
@@ -28,6 +31,8 @@ public partial class App : Application
     private MainViewModel? _viewModel;
     private MainWindow? _window;
     private TrayIconController? _tray;
+    private IAutostartService? _autostart;
+    private SettingsWindow? _settingsWindow;
     private bool _exiting;
 
     internal StartupOptions Options { get; private set; } = new();
@@ -77,13 +82,16 @@ public partial class App : Application
         _window.Closing += OnMainWindowClosing;
         MainWindow = _window;
 
-        _tray = new TrayIconController(_viewModel, ShowMainWindow, ExitApplication);
+        _autostart = new RegistryAutostartService(Environment.ProcessPath ?? Path.Combine(AppContext.BaseDirectory, "OACP.exe"));
+        _tray = new TrayIconController(_viewModel, ShowMainWindow, ShowSettings, ExitApplication);
 
         // Autostart starts hidden in the tray (SPEC F3.6).
         if (!Options.StartInTray)
         {
             ShowMainWindow();
         }
+
+        Dispatcher.BeginInvoke(CheckAutostartPath, DispatcherPriority.ApplicationIdle);
     }
 
     protected override void OnExit(ExitEventArgs e)
@@ -117,6 +125,35 @@ public partial class App : Application
         _window.Focus();
     }
 
+    /// <summary>Shows the settings window (one at a time).</summary>
+    internal void ShowSettings()
+    {
+        if (_autostart is null || _settings is null || _exiting)
+        {
+            return;
+        }
+
+        if (_settingsWindow is not null)
+        {
+            _settingsWindow.Activate();
+            return;
+        }
+
+        _settingsWindow = new SettingsWindow { DataContext = new SettingsViewModel(_autostart, _settings) };
+        if (_window is { IsVisible: true })
+        {
+            _settingsWindow.Owner = _window;
+        }
+        else
+        {
+            _settingsWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+        }
+
+        _settingsWindow.Closed += (_, _) => _settingsWindow = null;
+        _settingsWindow.Show();
+        _settingsWindow.Activate();
+    }
+
     /// <summary>Exits the application (tray menu "Exit").</summary>
     internal void ExitApplication()
     {
@@ -126,6 +163,7 @@ public partial class App : Application
         }
 
         _exiting = true;
+        _settingsWindow?.Close();
         _window?.Close();
         Shutdown();
     }
@@ -147,6 +185,37 @@ public partial class App : Application
 
         _exiting = true;
         Dispatcher.BeginInvoke(Shutdown);
+    }
+
+    /// <summary>Offers to fix autostart when the portable folder was moved (SPEC F4.4).</summary>
+    private void CheckAutostartPath()
+    {
+        if (_autostart is null)
+        {
+            return;
+        }
+
+        try
+        {
+            if (!_autostart.GetStatus().NeedsRepair)
+            {
+                return;
+            }
+
+            var answer = MessageBox.Show(
+                LocalizationManager.Instance["Autostart_RepairPrompt"],
+                AppInfo.ProductName,
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+            if (answer == MessageBoxResult.Yes)
+            {
+                _autostart.Enable();
+            }
+        }
+        catch (Exception ex) when (ex is SecurityException or UnauthorizedAccessException or IOException)
+        {
+            ShowError(LocalizationManager.Instance.Format("Error_AutostartFailed", ex.Message));
+        }
     }
 
     /// <summary>After an update the new instance waits for the old process to exit (SPEC F9.7).</summary>

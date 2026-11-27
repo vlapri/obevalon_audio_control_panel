@@ -24,14 +24,16 @@ internal sealed class TrayIconController : IDisposable
     private readonly TaskbarIcon _taskbarIcon;
     private readonly MainViewModel _viewModel;
     private readonly Action _showWindow;
+    private readonly Action _showSettings;
     private readonly Action _exit;
     private readonly DrawingIcon _normalIcon;
     private readonly DrawingIcon _mutedIcon;
 
-    public TrayIconController(MainViewModel viewModel, Action showWindow, Action exit)
+    public TrayIconController(MainViewModel viewModel, Action showWindow, Action showSettings, Action exit)
     {
         _viewModel = viewModel;
         _showWindow = showWindow;
+        _showSettings = showSettings;
         _exit = exit;
 
         var size = SystemMetrics.SmallIconSize;
@@ -131,6 +133,10 @@ internal sealed class TrayIconController : IDisposable
         var open = new MenuItem { Header = loc["Tray_Open"], FontWeight = FontWeights.SemiBold };
         open.Click += (_, _) => _showWindow();
         menu.Items.Add(open);
+
+        var settings = new MenuItem { Header = loc["Tray_Settings"] };
+        settings.Click += (_, _) => _showSettings();
+        menu.Items.Add(settings);
 
         var exit = new MenuItem { Header = loc["Tray_Exit"] };
         exit.Click += (_, _) => _exit();

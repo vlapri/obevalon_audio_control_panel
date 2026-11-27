@@ -84,3 +84,12 @@ Pro přehrávání zvuku během testu stačí třeba video na YouTube.
 - [ ] `OACP.exe --tray` se spustí jen do systray bez okna.
 - [ ] Druhé spuštění `OACP.exe` neotevře druhou instanci, ale zobrazí okno té první.
 - [ ] Výstup s podtržítkem v názvu se v nabídce zobrazí správně.
+
+## M5 – Autostart a okno Nastavení
+- [ ] Ozubené kolečko v hlavním okně i „Nastavení…“ v nabídce systray otevře okno Nastavení (jen jedno).
+- [ ] Zaškrtnutí „Spouštět po přihlášení“ nevyvolá UAC a v `regedit` vznikne `HKCU\Software\Microsoft\Windows\CurrentVersion\Run\ObevalonAudioControlPanel` = `"…\OACP.exe" --tray`.
+- [ ] Po odhlášení a přihlášení se aplikace spustí jen do systray, bez dotazu UAC.
+- [ ] Vypnutí autostartu ve Správci úloh (Aplikace po spuštění) se v Nastavení zobrazí jako upozornění; vypnutím a zapnutím v aplikaci se autostart znovu povolí.
+- [ ] Odškrtnutí autostartu hodnotu z registru odstraní.
+- [ ] Po přesunutí portable složky jinam a spuštění se aplikace zeptá, zda opravit cestu autostartu; „Ano“ cestu opraví.
+- [ ] Nastavení ukazuje cestu k `settings.ini` a informaci o portable režimu; „Otevřít složku“ otevře Průzkumníka s označeným souborem.

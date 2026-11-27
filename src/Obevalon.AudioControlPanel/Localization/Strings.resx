@@ -155,4 +155,48 @@
   <data name="Tray_ToolTipMicNone" xml:space="preserve">
     <value>Microphone: not found</value>
   </data>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="Settings_StartupHeader" xml:space="preserve">
+    <value>Startup</value>
+  </data>
+  <data name="Settings_Autostart" xml:space="preserve">
+    <value>Start at sign-in (in the tray)</value>
+  </data>
+  <data name="Settings_AutostartDisabledBySystem" xml:space="preserve">
+    <value>Autostart is disabled in Windows (Task Manager → Startup apps). Turn it off and on here to enable it again.</value>
+  </data>
+  <data name="Settings_AutostartWrongPath" xml:space="preserve">
+    <value>Autostart points to another location of the application.</value>
+  </data>
+  <data name="Settings_AutostartRepair" xml:space="preserve">
+    <value>Fix</value>
+  </data>
+  <data name="Settings_FileHeader" xml:space="preserve">
+    <value>Settings file</value>
+  </data>
+  <data name="Settings_Portable" xml:space="preserve">
+    <value>Portable mode: settings are stored next to the application.</value>
+  </data>
+  <data name="Settings_NotPortable" xml:space="preserve">
+    <value>The application folder is read-only, so settings are stored in your user profile.</value>
+  </data>
+  <data name="Settings_OpenFolder" xml:space="preserve">
+    <value>Open folder</value>
+  </data>
+  <data name="Common_Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Tray_Settings" xml:space="preserve">
+    <value>Settings…</value>
+  </data>
+  <data name="Autostart_RepairPrompt" xml:space="preserve">
+    <value>Autostart is set for another location of the application (the folder was probably moved).
+
+Update it to the current location?</value>
+  </data>
+  <data name="Error_AutostartFailed" xml:space="preserve">
+    <value>Could not change autostart: {0}</value>
+  </data>
 </root>
