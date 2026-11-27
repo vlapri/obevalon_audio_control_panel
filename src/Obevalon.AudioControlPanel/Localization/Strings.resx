@@ -24,9 +24,6 @@
   <data name="Common_Repository" xml:space="preserve">
     <value>Project on GitHub</value>
   </data>
-  <data name="MainWindow_WorkInProgress" xml:space="preserve">
-    <value>This application is under development. Audio output switching and microphone control are coming in the next versions.</value>
-  </data>
   <data name="Error_Unexpected_Title" xml:space="preserve">
     <value>Unexpected error</value>
   </data>
@@ -34,5 +31,47 @@
     <value>An unexpected error occurred:
 
 {0}</value>
+  </data>
+  <data name="Outputs_Header" xml:space="preserve">
+    <value>Audio outputs</value>
+  </data>
+  <data name="Outputs_None" xml:space="preserve">
+    <value>No audio outputs found.</value>
+  </data>
+  <data name="Output_IsDefault" xml:space="preserve">
+    <value>Default</value>
+  </data>
+  <data name="DeviceState_Disabled" xml:space="preserve">
+    <value>Disabled</value>
+  </data>
+  <data name="DeviceState_Unplugged" xml:space="preserve">
+    <value>Disconnected</value>
+  </data>
+  <data name="DeviceState_NotPresent" xml:space="preserve">
+    <value>Not present</value>
+  </data>
+  <data name="Microphone_Header" xml:space="preserve">
+    <value>Microphone</value>
+  </data>
+  <data name="Microphone_NotAvailable" xml:space="preserve">
+    <value>No microphone found.</value>
+  </data>
+  <data name="Microphone_Mute" xml:space="preserve">
+    <value>Mute microphone</value>
+  </data>
+  <data name="Microphone_Unmute" xml:space="preserve">
+    <value>Unmute microphone</value>
+  </data>
+  <data name="Microphone_Volume" xml:space="preserve">
+    <value>Microphone volume</value>
+  </data>
+  <data name="Error_SwitchFailed" xml:space="preserve">
+    <value>Could not switch the audio output: {0}</value>
+  </data>
+  <data name="Error_MicrophoneFailed" xml:space="preserve">
+    <value>Could not change the microphone: {0}</value>
+  </data>
+  <data name="Error_AudioUnavailable" xml:space="preserve">
+    <value>Audio devices are not available: {0}</value>
   </data>
 </root>
