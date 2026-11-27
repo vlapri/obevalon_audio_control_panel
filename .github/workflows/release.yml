@@ -1,8 +1,16 @@
 name: Release
 
 on:
+  # Either push a tag vX.Y.Z ...
   push:
     tags: ['v*.*.*']
+  # ... or run the workflow manually (Actions → Release → Run workflow); it creates the tag itself.
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release, e.g. 1.2.3 or 1.3.0-beta.1 (tag vX.Y.Z is created on the selected branch)'
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -21,14 +29,22 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
-      - name: Determine version from tag
+      - name: Determine version
         id: version
         shell: pwsh
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_VERSION: ${{ inputs.version }}
+          REF_NAME: ${{ github.ref_name }}
         run: |
-          $tag = '${{ github.ref_name }}'
-          $version = $tag.Substring(1)
-          if ($version -notmatch '^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$') { throw "Tag '$tag' is not a valid SemVer version (vX.Y.Z)." }
+          $version = if ($env:EVENT_NAME -eq 'workflow_dispatch') { $env:INPUT_VERSION.Trim().TrimStart('v') } else { $env:REF_NAME.Substring(1) }
+          if ($version -notmatch '^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$') { throw "'$version' is not a valid SemVer version (X.Y.Z)." }
+          $tag = "v$version"
+          if ($env:EVENT_NAME -eq 'workflow_dispatch' -and (git ls-remote --tags origin "refs/tags/$tag")) {
+            throw "Tag $tag already exists. Choose a new version."
+          }
           "version=$version" >> $env:GITHUB_OUTPUT
+          "tag=$tag" >> $env:GITHUB_OUTPUT
           "prerelease=$(if ($version.Contains('-')) { 'true' } else { 'false' })" >> $env:GITHUB_OUTPUT
 
       - name: Test
@@ -74,9 +90,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           $ghArgs = @(
-            'release', 'create', '${{ github.ref_name }}',
+            'release', 'create', '${{ steps.version.outputs.tag }}',
             '--title', 'Obevalon Audio Control Panel ${{ steps.version.outputs.version }}',
-            '--generate-notes', '--verify-tag')
+            '--generate-notes')
+          # A pushed tag must already exist; a manual run creates the tag on the built commit.
+          if ('${{ github.event_name }}' -eq 'workflow_dispatch') { $ghArgs += @('--target', $env:GITHUB_SHA) } else { $ghArgs += '--verify-tag' }
           if ('${{ steps.version.outputs.prerelease }}' -eq 'true') { $ghArgs += '--prerelease' }
           $ghArgs += (Get-ChildItem dist -File).FullName
           gh @ghArgs
