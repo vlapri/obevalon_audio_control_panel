@@ -93,3 +93,14 @@ Pro přehrávání zvuku během testu stačí třeba video na YouTube.
 - [ ] Odškrtnutí autostartu hodnotu z registru odstraní.
 - [ ] Po přesunutí portable složky jinam a spuštění se aplikace zeptá, zda opravit cestu autostartu; „Ano“ cestu opraví.
 - [ ] Nastavení ukazuje cestu k `settings.ini` a informaci o portable režimu; „Otevřít složku“ otevře Průzkumníka s označeným souborem.
+
+## M6 – Jazyk, motivy a nastavení
+- [ ] Motiv „Automaticky“: okna, nabídka v systray a tooltipy mají světlý/tmavý vzhled podle *Nastavení → Přizpůsobení → Barvy → Režim aplikací*; přepnutí ve Windows se projeví za běhu.
+- [ ] Motiv „Světlý“ / „Tmavý“ se použije okamžitě a zůstane po restartu; titulek okna odpovídá motivu.
+- [ ] V tmavém motivu je veškerý text čitelný (seznam výstupů, tlačítka v řádcích, úprava názvu, posuvník, zaškrtávátka, rozbalovací seznamy).
+- [ ] Jazyk „Čeština“ / „English“ přepne texty v otevřených oknech okamžitě, bez restartu; „Automaticky“ použije jazyk Windows.
+- [ ] Výběr mikrofonu: „Výchozí mikrofon systému“ sleduje výchozí mikrofon; konkrétní mikrofon se ovládá i po změně výchozího ve Windows.
+- [ ] „Přepnutí výstupu změní i zařízení pro komunikaci“ vypnuté → po přepnutí zůstane komunikační zařízení beze změny.
+- [ ] „Zavřením okna aplikaci ukončit“ → křížek aplikaci ukončí; vypnuté → schová do systray.
+- [ ] Všechny volby se uloží do `settings.ini` a platí po restartu.
+- [ ] (Windows 10) Vzhled je v pořádku i bez efektu Mica.

@@ -14,11 +14,44 @@
         ResizeMode="NoResize"
         ShowInTaskbar="False"
         WindowStartupLocation="CenterOwner"
-        UseLayoutRounding="True">
+        Style="{StaticResource AppWindow}">
   <StackPanel x:Name="Root" Margin="16">
 
+    <!-- General -->
+    <TextBlock Style="{StaticResource SectionHeader}" Margin="0,0,0,6" Text="{loc:Loc Settings_GeneralHeader}" />
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" SharedSizeGroup="Label" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
+
+      <TextBlock VerticalAlignment="Center" Margin="0,0,12,0" Text="{loc:Loc Settings_Language}" />
+      <ComboBox Grid.Column="1" ItemsSource="{Binding LanguageOptions}" DisplayMemberPath="Label"
+                SelectedValuePath="Value" SelectedValue="{Binding Language}"
+                AutomationProperties.Name="{loc:Loc Settings_Language}" />
+
+      <TextBlock Grid.Row="1" VerticalAlignment="Center" Margin="0,8,12,0" Text="{loc:Loc Settings_Theme}" />
+      <ComboBox Grid.Row="1" Grid.Column="1" Margin="0,8,0,0" ItemsSource="{Binding ThemeOptions}" DisplayMemberPath="Label"
+                SelectedValuePath="Value" SelectedValue="{Binding Theme}"
+                AutomationProperties.Name="{loc:Loc Settings_Theme}" />
+
+      <TextBlock Grid.Row="2" VerticalAlignment="Center" Margin="0,8,12,0" Text="{loc:Loc Settings_Microphone}" />
+      <ComboBox Grid.Row="2" Grid.Column="1" Margin="0,8,0,0" ItemsSource="{Binding MicrophoneOptions}" DisplayMemberPath="Label"
+                SelectedValuePath="Value" SelectedValue="{Binding MicrophoneDeviceId}"
+                AutomationProperties.Name="{loc:Loc Settings_Microphone}" />
+    </Grid>
+
+    <CheckBox Margin="0,10,0,0" IsChecked="{Binding SwitchCommunicationsDevice}" Content="{loc:Loc Settings_SwitchCommunications}" />
+    <CheckBox Margin="0,4,0,0" IsChecked="{Binding ShowSwitchOsd}" Content="{loc:Loc Settings_ShowOsd}" />
+    <CheckBox Margin="0,4,0,0" IsChecked="{Binding ExitOnClose}" Content="{loc:Loc Settings_ExitOnClose}" />
+
     <!-- Startup -->
-    <TextBlock Style="{StaticResource SectionHeader}" Margin="0,0,0,6" Text="{loc:Loc Settings_StartupHeader}" />
+    <TextBlock Style="{StaticResource SectionHeader}" Text="{loc:Loc Settings_StartupHeader}" />
     <CheckBox IsChecked="{Binding AutostartEnabled}" Content="{loc:Loc Settings_Autostart}" />
     <TextBlock Margin="22,4,0,0" TextWrapping="Wrap" Style="{StaticResource SecondaryText}"
                Text="{loc:Loc Settings_AutostartDisabledBySystem}"

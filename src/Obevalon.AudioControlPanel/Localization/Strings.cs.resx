@@ -199,4 +199,40 @@ Nastavit ho na aktuální umístění?</value>
   <data name="Error_AutostartFailed" xml:space="preserve">
     <value>Automatické spouštění se nepodařilo změnit: {0}</value>
   </data>
+  <data name="Settings_GeneralHeader" xml:space="preserve">
+    <value>Obecné</value>
+  </data>
+  <data name="Settings_Language" xml:space="preserve">
+    <value>Jazyk</value>
+  </data>
+  <data name="Settings_LanguageAuto" xml:space="preserve">
+    <value>Automaticky (podle systému)</value>
+  </data>
+  <data name="Settings_Theme" xml:space="preserve">
+    <value>Motiv</value>
+  </data>
+  <data name="Settings_ThemeAuto" xml:space="preserve">
+    <value>Automaticky (podle Windows)</value>
+  </data>
+  <data name="Settings_ThemeLight" xml:space="preserve">
+    <value>Světlý</value>
+  </data>
+  <data name="Settings_ThemeDark" xml:space="preserve">
+    <value>Tmavý</value>
+  </data>
+  <data name="Settings_Microphone" xml:space="preserve">
+    <value>Mikrofon</value>
+  </data>
+  <data name="Settings_MicrophoneDefault" xml:space="preserve">
+    <value>Výchozí mikrofon systému</value>
+  </data>
+  <data name="Settings_SwitchCommunications" xml:space="preserve">
+    <value>Přepnutí výstupu změní i zařízení pro komunikaci (Teams, Discord…)</value>
+  </data>
+  <data name="Settings_ShowOsd" xml:space="preserve">
+    <value>Po přepnutí zobrazit krátké oznámení</value>
+  </data>
+  <data name="Settings_ExitOnClose" xml:space="preserve">
+    <value>Zavřením okna aplikaci ukončit (místo schování do systray)</value>
+  </data>
 </root>

@@ -15,7 +15,7 @@
         SizeToContent="Height"
         ResizeMode="CanMinimize"
         WindowStartupLocation="CenterScreen"
-        UseLayoutRounding="True">
+        Style="{StaticResource AppWindow}">
   <StackPanel Margin="16">
 
     <!-- Header -->
@@ -77,7 +77,7 @@
                   </Grid.ColumnDefinitions>
 
                   <TextBlock x:Name="Check" Text="&#xE73E;" FontFamily="{StaticResource IconFont}"
-                             Foreground="{DynamicResource {x:Static SystemColors.HotTrackBrushKey}}"
+                             Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
                              VerticalAlignment="Center" Visibility="Hidden" />
 
                   <StackPanel Grid.Column="1">
@@ -154,7 +154,7 @@
             </DataTrigger>
             <DataTrigger Binding="{Binding InCycle}" Value="True">
               <Setter TargetName="CycleButton" Property="Opacity" Value="1" />
-              <Setter TargetName="CycleButton" Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HotTrackBrushKey}}" />
+              <Setter TargetName="CycleButton" Property="Foreground" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" />
               <Setter TargetName="CycleButton" Property="ToolTip" Value="{loc:Loc Output_InCycleOn}" />
               <Setter TargetName="CycleButton" Property="AutomationProperties.Name" Value="{loc:Loc Output_InCycleOn}" />
             </DataTrigger>

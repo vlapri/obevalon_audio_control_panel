@@ -262,7 +262,7 @@ při načtení se nastavení převede (migrace) a uloží s novým číslem verz
 | Klávesové zkratky | Win32 `RegisterHotKey` / `UnregisterHotKey` přes skryté okno (`HwndSource`) |
 | Jediná instance | pojmenovaný `Mutex` + pojmenovaný `EventWaitHandle` pro signál „zobraz okno“ |
 | Lokalizace | `.resx` (`Strings.resx` = EN, `Strings.cs.resx` = CZ), přepínání za běhu |
-| Motiv | vlastní `ResourceDictionary` Light/Dark; detekce přes registr `AppsUseLightTheme` + `SystemEvents.UserPreferenceChanged`; tmavý titulek okna přes `DwmSetWindowAttribute` |
+| Motiv | vestavěný **WPF Fluent motiv** (`Application.ThemeMode` = System/Light/Dark): styly standardních prvků, tmavý titulek a sledování motivu Windows bez vlastního kódu. V .NET 10 je API označené jako experimentální (varování WPF0001 je potlačené). Vlastní styly používají barvy Fluent motivu přes `DynamicResource`. |
 | INI | vlastní jednoduchý parser/zapisovač (bez závislostí) |
 | Testy | xUnit |
 
@@ -549,7 +549,7 @@ Stav: ✅ = hotovo, 🧪 = implementováno, čeká na ověření na reálném HW
 | **M3 – Hlavní okno** 🧪 | Seznam výstupů (název, poznámka, stav, aktuální), editace názvu/poznámky, pořadí, „v cyklu“, „skrýt“, tlačítko „Další výstup“, sekce mikrofonu (posuvník, mute) | Použitelná aplikace z okna |
 | **M4 – Systray a životní cyklus** 🧪 | Ikona, tooltip, levý/pravý klik, kontextové menu, ikona mute, minimalizace/zavření do tray, `--tray`, jediná instance | Aplikace žije v systray |
 | **M5 – Autostart** 🧪 | Registr HKCU Run, StartupApproved, kontrola a oprava cesty | Autostart bez UAC |
-| **M6 – Lokalizace a motivy** | resx CZ/EN, autodetekce + přepnutí za běhu, Light/Dark + auto, tmavý titulek, okno Nastavení | Dvojjazyčná aplikace s motivy |
+| **M6 – Lokalizace a motivy** 🧪 | resx CZ/EN, autodetekce + přepnutí za běhu, Light/Dark + auto, tmavý titulek, okno Nastavení | Dvojjazyčná aplikace s motivy |
 | **M7 – Klávesové zkratky** | `Win32HotkeyService`, ovládací prvek pro zachycení zkratky, hlášení konfliktů | Globální zkratky |
 | **M8 – Aktualizace** | Podpisový klíč, `make-update-manifest.ps1`, rozšíření `release.yml`, `UpdateChecker` / `Downloader` / `Scheduler` + testy, `ExeSwapUpdateInstaller`, `DotNetRuntimeProbe`, oznamovací okno, položka v tray, `docs/RELEASING.md` | Ověřeno ostrou aktualizací `v0.8.0` → `v0.8.1` |
 | **M9 – Dokončení** | O aplikaci, finální ikony, OSD oznámení, logování, ošetření chyb, migrace INI, `docs/TESTING.md` | Release candidate |

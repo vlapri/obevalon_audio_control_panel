@@ -16,6 +16,9 @@
 
     <!-- Only Czech satellite resources (English is the neutral language). -->
     <SatelliteResourceLanguages>cs</SatelliteResourceLanguages>
+
+    <!-- The WPF Fluent theme (Application.ThemeMode) is marked experimental in .NET 10 (SPEC D10). -->
+    <NoWarn>$(NoWarn);WPF0001</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

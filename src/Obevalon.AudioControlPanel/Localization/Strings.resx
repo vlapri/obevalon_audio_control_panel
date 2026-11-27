@@ -199,4 +199,40 @@ Update it to the current location?</value>
   <data name="Error_AutostartFailed" xml:space="preserve">
     <value>Could not change autostart: {0}</value>
   </data>
+  <data name="Settings_GeneralHeader" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="Settings_Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="Settings_LanguageAuto" xml:space="preserve">
+    <value>Automatic (system language)</value>
+  </data>
+  <data name="Settings_Theme" xml:space="preserve">
+    <value>Theme</value>
+  </data>
+  <data name="Settings_ThemeAuto" xml:space="preserve">
+    <value>Automatic (Windows theme)</value>
+  </data>
+  <data name="Settings_ThemeLight" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="Settings_ThemeDark" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="Settings_Microphone" xml:space="preserve">
+    <value>Microphone</value>
+  </data>
+  <data name="Settings_MicrophoneDefault" xml:space="preserve">
+    <value>System default microphone</value>
+  </data>
+  <data name="Settings_SwitchCommunications" xml:space="preserve">
+    <value>Switching an output also changes the communications device (Teams, Discord…)</value>
+  </data>
+  <data name="Settings_ShowOsd" xml:space="preserve">
+    <value>Show a short notification after switching</value>
+  </data>
+  <data name="Settings_ExitOnClose" xml:space="preserve">
+    <value>Closing the window exits the application (instead of hiding it to the tray)</value>
+  </data>
 </root>
