@@ -80,4 +80,58 @@
   <data name="Error_SettingsSaveFailed" xml:space="preserve">
     <value>Could not save the settings: {0}</value>
   </data>
+  <data name="Outputs_Next" xml:space="preserve">
+    <value>Next output</value>
+  </data>
+  <data name="Outputs_NextTooltip" xml:space="preserve">
+    <value>Switch to the next output in the cycle</value>
+  </data>
+  <data name="Outputs_ShowHidden" xml:space="preserve">
+    <value>Show hidden</value>
+  </data>
+  <data name="Output_InCycleOn" xml:space="preserve">
+    <value>In the cycle – click to exclude</value>
+  </data>
+  <data name="Output_InCycleOff" xml:space="preserve">
+    <value>Not in the cycle – click to include</value>
+  </data>
+  <data name="Output_MoveUp" xml:space="preserve">
+    <value>Move up</value>
+  </data>
+  <data name="Output_MoveDown" xml:space="preserve">
+    <value>Move down</value>
+  </data>
+  <data name="Output_Edit" xml:space="preserve">
+    <value>Rename and add a note</value>
+  </data>
+  <data name="Output_Hide" xml:space="preserve">
+    <value>Hide</value>
+  </data>
+  <data name="Output_Unhide" xml:space="preserve">
+    <value>Show again</value>
+  </data>
+  <data name="Output_Remove" xml:space="preserve">
+    <value>Remove from the list</value>
+  </data>
+  <data name="Output_Hidden" xml:space="preserve">
+    <value>Hidden</value>
+  </data>
+  <data name="Output_NameLabel" xml:space="preserve">
+    <value>Name (empty = system name)</value>
+  </data>
+  <data name="Output_NoteLabel" xml:space="preserve">
+    <value>Note</value>
+  </data>
+  <data name="Output_SystemName" xml:space="preserve">
+    <value>System name</value>
+  </data>
+  <data name="Common_Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Common_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Info_CycleNeedsTwo" xml:space="preserve">
+    <value>Cycling needs at least two available outputs. Mark them with the cycle icon.</value>
+  </data>
 </root>

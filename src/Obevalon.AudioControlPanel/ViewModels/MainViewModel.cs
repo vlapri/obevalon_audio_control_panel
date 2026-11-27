@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Runtime.InteropServices;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Obevalon.AudioControlPanel.Core.Audio;
 using Obevalon.AudioControlPanel.Core.Logic;
 using Obevalon.AudioControlPanel.Core.Settings;
@@ -32,8 +33,28 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
 
     public bool HasOutputs => Outputs.Count > 0;
 
+    /// <summary>Show outputs the user has hidden (to un-hide them).</summary>
+    public bool ShowHiddenDevices
+    {
+        get => _settings.Current.ShowHiddenDevices;
+        set
+        {
+            if (_settings.Current.ShowHiddenDevices == value)
+            {
+                return;
+            }
+
+            _settings.Current.ShowHiddenDevices = value;
+            OnPropertyChanged();
+            SaveAndRefresh();
+        }
+    }
+
     [ObservableProperty]
     private string? _errorMessage;
+
+    [ObservableProperty]
+    private string? _infoMessage;
 
     public void Dispose()
     {
@@ -42,27 +63,136 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         Microphone.Dispose();
     }
 
+    /// <summary>Switches to the next output in the cycle (SPEC F1.5).</summary>
+    [RelayCommand]
+    public void NextOutput()
+    {
+        try
+        {
+            var next = CycleSelector.Next(MergeOutputs());
+            if (next is null)
+            {
+                InfoMessage = LocalizationManager.Instance["Info_CycleNeedsTwo"];
+                return;
+            }
+
+            SwitchTo(next);
+        }
+        catch (COMException ex)
+        {
+            ReportError("Error_SwitchFailed", ex);
+        }
+    }
+
+    /// <summary>Remembers the main window position (SPEC §3.8, [Window]).</summary>
+    public void SaveWindowPosition(double left, double top)
+    {
+        if (_settings.Current.WindowLeft == left && _settings.Current.WindowTop == top)
+        {
+            return;
+        }
+
+        _settings.Current.WindowLeft = left;
+        _settings.Current.WindowTop = top;
+        SaveSettings();
+    }
+
+    internal void SwitchTo(OutputDeviceViewModel output) => SwitchTo(output.Id);
+
+    internal void Move(OutputDeviceViewModel output, int offset)
+    {
+        // Move past hidden outputs that are not shown, so one click always moves visibly.
+        var visible = Outputs.Select(o => o.Id).ToList();
+        var index = visible.IndexOf(output.Id);
+        var targetIndex = index + offset;
+        if (index < 0 || targetIndex < 0 || targetIndex >= visible.Count)
+        {
+            return;
+        }
+
+        var all = _settings.Current.Outputs;
+        var from = all.FindIndex(o => o.Id == output.Id);
+        var to = all.FindIndex(o => o.Id == visible[targetIndex]);
+        if (from >= 0 && to >= 0 && DeviceCatalog.Move(_settings.Current, output.Id, to - from))
+        {
+            SaveAndRefresh();
+        }
+    }
+
+    internal void SetInCycle(OutputDeviceViewModel output, bool inCycle) =>
+        UpdateOutput(output, o => o.InCycle = inCycle);
+
+    internal void SetHidden(OutputDeviceViewModel output, bool hidden) =>
+        UpdateOutput(output, o => o.Hidden = hidden);
+
+    internal void Rename(OutputDeviceViewModel output, string? name, string? note) =>
+        UpdateOutput(output, o =>
+        {
+            o.Name = string.IsNullOrWhiteSpace(name) ? null : name.Trim();
+            o.Note = string.IsNullOrWhiteSpace(note) ? null : note.Trim();
+        });
+
+    internal void Remove(OutputDeviceViewModel output)
+    {
+        if (DeviceCatalog.Remove(_settings.Current, output.Id))
+        {
+            SaveAndRefresh();
+        }
+    }
+
+    private void UpdateOutput(OutputDeviceViewModel output, Action<OutputDeviceSettings> update)
+    {
+        var settings = _settings.Current.FindOutput(output.Id);
+        if (settings is null)
+        {
+            return;
+        }
+
+        update(settings);
+        SaveAndRefresh();
+    }
+
+    private void SwitchTo(string deviceId)
+    {
+        try
+        {
+            _audio.SetDefaultDevice(deviceId, _settings.Current.SwitchCommunicationsDevice);
+            ErrorMessage = null;
+            InfoMessage = null;
+        }
+        catch (COMException ex)
+        {
+            ReportError("Error_SwitchFailed", ex);
+        }
+    }
+
+    private IReadOnlyList<OutputEntry> MergeOutputs()
+    {
+        var entries = DeviceCatalog.Merge(
+            _settings.Current,
+            _audio.GetDevices(AudioFlow.Output),
+            _audio.GetDefaultDeviceId(AudioFlow.Output),
+            out var settingsChanged);
+        if (settingsChanged)
+        {
+            SaveSettings();
+        }
+
+        return entries;
+    }
+
     private void RefreshOutputs()
     {
         try
         {
-            var entries = DeviceCatalog.Merge(
-                _settings.Current,
-                _audio.GetDevices(AudioFlow.Output),
-                _audio.GetDefaultDeviceId(AudioFlow.Output),
-                out var settingsChanged);
-            if (settingsChanged)
-            {
-                SaveSettings();
-            }
+            var visible = MergeOutputs()
+                .Where(e => !e.Hidden || _settings.Current.ShowHiddenDevices)
+                .ToList();
 
             Outputs.Clear();
-            foreach (var entry in entries)
+            for (var i = 0; i < visible.Count; i++)
             {
-                if (!entry.Hidden || _settings.Current.ShowHiddenDevices)
-                {
-                    Outputs.Add(new OutputDeviceViewModel(entry, SwitchTo));
-                }
+                Outputs.Add(new OutputDeviceViewModel(visible[i], this, isFirst: i == 0, isLast: i == visible.Count - 1));
             }
         }
         catch (COMException ex)
@@ -73,20 +203,28 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         OnPropertyChanged(nameof(HasOutputs));
     }
 
-    private void SwitchTo(OutputDeviceViewModel output)
+    private void SaveAndRefresh()
     {
-        try
+        SaveSettings();
+        RefreshOutputs();
+    }
+
+    private void SaveSettings()
+    {
+        if (!_settings.Save() && _settings.LastSaveError is { } error)
         {
-            _audio.SetDefaultDevice(output.Id, _settings.Current.SwitchCommunicationsDevice);
-            ErrorMessage = null;
-        }
-        catch (COMException ex)
-        {
-            ReportError("Error_SwitchFailed", ex);
+            ReportError("Error_SettingsSaveFailed", error);
         }
     }
 
-    private void OnDevicesChanged(object? sender, EventArgs e) => RefreshOutputs();
+    private void OnDevicesChanged(object? sender, EventArgs e)
+    {
+        // Do not rebuild the list while the user is typing a name or note.
+        if (!Outputs.Any(o => o.IsEditing))
+        {
+            RefreshOutputs();
+        }
+    }
 
     private void OnDefaultDeviceChanged(object? sender, DefaultDeviceChangedEventArgs e)
     {
@@ -98,14 +236,6 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         foreach (var output in Outputs)
         {
             output.IsDefault = string.Equals(output.Id, e.DeviceId, StringComparison.OrdinalIgnoreCase);
-        }
-    }
-
-    private void SaveSettings()
-    {
-        if (!_settings.Save() && _settings.LastSaveError is { } error)
-        {
-            ReportError("Error_SettingsSaveFailed", error);
         }
     }
 
