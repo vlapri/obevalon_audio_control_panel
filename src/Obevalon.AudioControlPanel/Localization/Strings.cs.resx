@@ -134,4 +134,25 @@
   <data name="Info_CycleNeedsTwo" xml:space="preserve">
     <value>Pro přepínání dokola jsou potřeba alespoň dva dostupné výstupy. Označte je ikonou cyklu.</value>
   </data>
+  <data name="Tray_Open" xml:space="preserve">
+    <value>Otevřít</value>
+  </data>
+  <data name="Tray_Exit" xml:space="preserve">
+    <value>Ukončit</value>
+  </data>
+  <data name="Tray_NoOutputs" xml:space="preserve">
+    <value>Žádné dostupné výstupy</value>
+  </data>
+  <data name="Tray_ToolTipOutput" xml:space="preserve">
+    <value>Výstup: {0}</value>
+  </data>
+  <data name="Tray_ToolTipMicOn" xml:space="preserve">
+    <value>Mikrofon: zapnutý ({0:0} %)</value>
+  </data>
+  <data name="Tray_ToolTipMicMuted" xml:space="preserve">
+    <value>Mikrofon: ztlumený</value>
+  </data>
+  <data name="Tray_ToolTipMicNone" xml:space="preserve">
+    <value>Mikrofon: nenalezen</value>
+  </data>
 </root>

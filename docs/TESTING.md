@@ -70,3 +70,17 @@ Pro přehrávání zvuku během testu stačí třeba video na YouTube.
 - [ ] Chybějící výstup jde odebrat ze seznamu.
 - [ ] Okno se po restartu otevře na stejném místě; po odpojení monitoru se otevře na středu obrazovky.
 - [ ] Všechny změny se okamžitě propíšou do `settings.ini`.
+
+## M4 – Systray a životní cyklus
+- [ ] Po spuštění je v oznamovací oblasti (systray) ikona aplikace, ostrá i při škálování 125–200 %.
+- [ ] Levý klik na ikonu otevře a aktivuje hlavní okno (i když bylo schované nebo minimalizované).
+- [ ] Pravý klik otevře nabídku: dostupné výstupy (aktuální zaškrtnutý), „Další výstup“, ztlumení mikrofonu, „Otevřít“, „Ukončit“.
+- [ ] Kliknutí na výstup v nabídce ho přepne; „Další výstup“ přepne dokola.
+- [ ] Položka mikrofonu ztlumí/zapne mikrofon; při ztlumení má ikona v systray červený odznak.
+- [ ] Tooltip ikony ukazuje aktuální výstup a stav mikrofonu a mění se s nimi.
+- [ ] Minimalizace okna ho schová do systray (nezůstane na hlavním panelu).
+- [ ] Zavření okna křížkem ho schová do systray; „Ukončit“ v nabídce aplikaci opravdu ukončí (proces zmizí ze Správce úloh).
+- [ ] S `CloseToTray=false` v `settings.ini` zavření okna aplikaci ukončí.
+- [ ] `OACP.exe --tray` se spustí jen do systray bez okna.
+- [ ] Druhé spuštění `OACP.exe` neotevře druhou instanci, ale zobrazí okno té první.
+- [ ] Výstup s podtržítkem v názvu se v nabídce zobrazí správně.
