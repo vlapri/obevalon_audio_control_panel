@@ -3,6 +3,8 @@ using System.Collections.ObjectModel;
 using System.Runtime.InteropServices;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Obevalon.AudioControlPanel.Core.Audio;
+using Obevalon.AudioControlPanel.Core.Logic;
+using Obevalon.AudioControlPanel.Core.Settings;
 using Obevalon.AudioControlPanel.Localization;
 
 namespace Obevalon.AudioControlPanel.ViewModels;
@@ -10,14 +12,13 @@ namespace Obevalon.AudioControlPanel.ViewModels;
 /// <summary>Main window: list of audio outputs and the microphone.</summary>
 public sealed partial class MainViewModel : ObservableObject, IDisposable
 {
-    // Will come from settings.ini (milestone M2, SPEC D7).
-    private const bool SwitchCommunicationsDevice = true;
-
     private readonly IAudioDeviceService _audio;
+    private readonly SettingsManager _settings;
 
-    public MainViewModel(IAudioDeviceService audio, IMicrophoneService microphone)
+    public MainViewModel(IAudioDeviceService audio, IMicrophoneService microphone, SettingsManager settings)
     {
         _audio = audio;
+        _settings = settings;
         Microphone = new MicrophoneViewModel(microphone, ex => ReportError("Error_MicrophoneFailed", ex));
 
         _audio.DevicesChanged += OnDevicesChanged;
@@ -45,17 +46,23 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     {
         try
         {
-            var defaultId = _audio.GetDefaultDeviceId(AudioFlow.Output);
-
-            // Ordering and hiding come from settings in milestones M2/M3; for now available devices first.
-            var devices = _audio.GetDevices(AudioFlow.Output)
-                .OrderBy(d => d.IsAvailable ? 0 : 1)
-                .ThenBy(d => d.Name, StringComparer.CurrentCultureIgnoreCase);
+            var entries = DeviceCatalog.Merge(
+                _settings.Current,
+                _audio.GetDevices(AudioFlow.Output),
+                _audio.GetDefaultDeviceId(AudioFlow.Output),
+                out var settingsChanged);
+            if (settingsChanged)
+            {
+                SaveSettings();
+            }
 
             Outputs.Clear();
-            foreach (var device in devices)
+            foreach (var entry in entries)
             {
-                Outputs.Add(new OutputDeviceViewModel(device, device.Id == defaultId, SwitchTo));
+                if (!entry.Hidden || _settings.Current.ShowHiddenDevices)
+                {
+                    Outputs.Add(new OutputDeviceViewModel(entry, SwitchTo));
+                }
             }
         }
         catch (COMException ex)
@@ -70,7 +77,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     {
         try
         {
-            _audio.SetDefaultDevice(output.Id, SwitchCommunicationsDevice);
+            _audio.SetDefaultDevice(output.Id, _settings.Current.SwitchCommunicationsDevice);
             ErrorMessage = null;
         }
         catch (COMException ex)
@@ -90,7 +97,15 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
 
         foreach (var output in Outputs)
         {
-            output.IsDefault = output.Id == e.DeviceId;
+            output.IsDefault = string.Equals(output.Id, e.DeviceId, StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
+    private void SaveSettings()
+    {
+        if (!_settings.Save() && _settings.LastSaveError is { } error)
+        {
+            ReportError("Error_SettingsSaveFailed", error);
         }
     }
 

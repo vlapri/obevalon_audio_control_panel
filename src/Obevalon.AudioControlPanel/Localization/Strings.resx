@@ -74,4 +74,10 @@
   <data name="Error_AudioUnavailable" xml:space="preserve">
     <value>Audio devices are not available: {0}</value>
   </data>
+  <data name="DeviceState_Missing" xml:space="preserve">
+    <value>Missing</value>
+  </data>
+  <data name="Error_SettingsSaveFailed" xml:space="preserve">
+    <value>Could not save the settings: {0}</value>
+  </data>
 </root>

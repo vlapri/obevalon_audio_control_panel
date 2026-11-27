@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Threading;
 using Obevalon.AudioControlPanel.Core;
-using Obevalon.AudioControlPanel.Core.Localization;
+using Obevalon.AudioControlPanel.Core.Settings;
 using Obevalon.AudioControlPanel.Localization;
 using Obevalon.AudioControlPanel.Platform.CoreAudio;
 using Obevalon.AudioControlPanel.ViewModels;
@@ -13,6 +14,7 @@ namespace Obevalon.AudioControlPanel;
 
 public partial class App : Application
 {
+    private SettingsManager? _settings;
     private AudioDeviceService? _audio;
     private MicrophoneService? _microphone;
     private MainViewModel? _viewModel;
@@ -26,15 +28,18 @@ public partial class App : Application
         DispatcherUnhandledException += OnDispatcherUnhandledException;
         Options = StartupOptions.Parse(e.Args);
 
-        // Language setting will be read from settings.ini (milestone M2/M6).
-        LocalizationManager.Instance.SetLanguage(LanguageResolver.Auto);
+        _settings = new SettingsManager(CreateSettingsStore());
+        LocalizationManager.Instance.SetLanguage(_settings.Current.Language);
 
         // Audio services post their notifications to the UI thread through this context.
         var uiContext = SynchronizationContext.Current ?? new DispatcherSynchronizationContext(Dispatcher);
         try
         {
             _audio = new AudioDeviceService(uiContext);
-            _microphone = new MicrophoneService(_audio, uiContext);
+            _microphone = new MicrophoneService(_audio, uiContext)
+            {
+                SelectedDeviceId = _settings.Current.MicrophoneDeviceId,
+            };
         }
         catch (COMException ex)
         {
@@ -43,7 +48,7 @@ public partial class App : Application
             return;
         }
 
-        _viewModel = new MainViewModel(_audio, _microphone);
+        _viewModel = new MainViewModel(_audio, _microphone, _settings);
 
         // The tray icon comes in milestone M4; until then the window is always shown,
         // otherwise "--tray" would leave an invisible process without a way to exit.
@@ -58,6 +63,15 @@ public partial class App : Application
         _microphone?.Dispose();
         _audio?.Dispose();
         base.OnExit(e);
+    }
+
+    /// <summary>settings.ini next to the exe (portable), or in %APPDATA% when that folder is read-only.</summary>
+    private static IniSettingsStore CreateSettingsStore()
+    {
+        var executableDirectory = Path.GetDirectoryName(Environment.ProcessPath) ?? AppContext.BaseDirectory;
+        var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        var location = SettingsPathResolver.Resolve(executableDirectory, appData);
+        return new IniSettingsStore(location.Path, location.IsPortable);
     }
 
     private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)

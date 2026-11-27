@@ -74,4 +74,10 @@
   <data name="Error_AudioUnavailable" xml:space="preserve">
     <value>Audio zařízení nejsou dostupná: {0}</value>
   </data>
+  <data name="DeviceState_Missing" xml:space="preserve">
+    <value>Chybí</value>
+  </data>
+  <data name="Error_SettingsSaveFailed" xml:space="preserve">
+    <value>Nastavení se nepodařilo uložit: {0}</value>
+  </data>
 </root>
