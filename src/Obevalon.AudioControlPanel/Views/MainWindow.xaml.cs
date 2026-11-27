@@ -37,6 +37,16 @@ public partial class MainWindow : Window
         Top = y;
     }
 
+    /// <summary>Minimizing hides the window to the tray (SPEC F3.5).</summary>
+    protected override void OnStateChanged(EventArgs e)
+    {
+        base.OnStateChanged(e);
+        if (WindowState == WindowState.Minimized)
+        {
+            Hide();
+        }
+    }
+
     protected override void OnClosing(CancelEventArgs e)
     {
         base.OnClosing(e);

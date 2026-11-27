@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
+using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -7,6 +9,8 @@ using Obevalon.AudioControlPanel.Core;
 using Obevalon.AudioControlPanel.Core.Settings;
 using Obevalon.AudioControlPanel.Localization;
 using Obevalon.AudioControlPanel.Platform.CoreAudio;
+using Obevalon.AudioControlPanel.Platform.Shell;
+using Obevalon.AudioControlPanel.Tray;
 using Obevalon.AudioControlPanel.ViewModels;
 using Obevalon.AudioControlPanel.Views;
 
@@ -14,10 +18,17 @@ namespace Obevalon.AudioControlPanel;
 
 public partial class App : Application
 {
+    /// <summary>How long a restarted (updated) instance waits for the previous one to exit.</summary>
+    private static readonly TimeSpan PreviousInstanceTimeout = TimeSpan.FromSeconds(10);
+
+    private SingleInstance? _singleInstance;
     private SettingsManager? _settings;
     private AudioDeviceService? _audio;
     private MicrophoneService? _microphone;
     private MainViewModel? _viewModel;
+    private MainWindow? _window;
+    private TrayIconController? _tray;
+    private bool _exiting;
 
     internal StartupOptions Options { get; private set; } = new();
 
@@ -27,6 +38,17 @@ public partial class App : Application
 
         DispatcherUnhandledException += OnDispatcherUnhandledException;
         Options = StartupOptions.Parse(e.Args);
+
+        WaitForPreviousProcess(Options.WaitForProcessId);
+        var timeout = Options.WaitForProcessId is null && !Options.Updated ? TimeSpan.Zero : PreviousInstanceTimeout;
+        _singleInstance = SingleInstance.TryAcquire(timeout, () => Dispatcher.BeginInvoke(ShowMainWindow));
+        if (_singleInstance is null)
+        {
+            // Already running: bring that instance to the front and quit (SPEC F3.7).
+            SingleInstance.SignalRunningInstance();
+            Shutdown();
+            return;
+        }
 
         _settings = new SettingsManager(CreateSettingsStore());
         LocalizationManager.Instance.SetLanguage(_settings.Current.Language);
@@ -50,20 +72,104 @@ public partial class App : Application
 
         _viewModel = new MainViewModel(_audio, _microphone, _settings);
 
-        // The tray icon comes in milestone M4; until then the window is always shown,
-        // otherwise "--tray" would leave an invisible process without a way to exit.
-        var window = new MainWindow { DataContext = _viewModel };
-        window.RestorePosition(_settings.Current.WindowLeft, _settings.Current.WindowTop);
-        MainWindow = window;
-        window.Show();
+        _window = new MainWindow { DataContext = _viewModel };
+        _window.RestorePosition(_settings.Current.WindowLeft, _settings.Current.WindowTop);
+        _window.Closing += OnMainWindowClosing;
+        MainWindow = _window;
+
+        _tray = new TrayIconController(_viewModel, ShowMainWindow, ExitApplication);
+
+        // Autostart starts hidden in the tray (SPEC F3.6).
+        if (!Options.StartInTray)
+        {
+            ShowMainWindow();
+        }
     }
 
     protected override void OnExit(ExitEventArgs e)
     {
+        _tray?.Dispose();
         _viewModel?.Dispose();
         _microphone?.Dispose();
         _audio?.Dispose();
+        _singleInstance?.Dispose();
         base.OnExit(e);
+    }
+
+    /// <summary>Shows, restores and activates the main window.</summary>
+    internal void ShowMainWindow()
+    {
+        if (_window is null || _exiting)
+        {
+            return;
+        }
+
+        _window.Show();
+        if (_window.WindowState == WindowState.Minimized)
+        {
+            _window.WindowState = WindowState.Normal;
+        }
+
+        // Bring to the foreground even when another application is active.
+        _window.Activate();
+        _window.Topmost = true;
+        _window.Topmost = false;
+        _window.Focus();
+    }
+
+    /// <summary>Exits the application (tray menu "Exit").</summary>
+    internal void ExitApplication()
+    {
+        if (_exiting)
+        {
+            return;
+        }
+
+        _exiting = true;
+        _window?.Close();
+        Shutdown();
+    }
+
+    private void OnMainWindowClosing(object? sender, CancelEventArgs e)
+    {
+        if (_exiting)
+        {
+            return;
+        }
+
+        if (_settings?.Current.CloseToTray != false)
+        {
+            // Closing the window only hides it to the tray (SPEC F3.5).
+            e.Cancel = true;
+            _window?.Hide();
+            return;
+        }
+
+        _exiting = true;
+        Dispatcher.BeginInvoke(Shutdown);
+    }
+
+    /// <summary>After an update the new instance waits for the old process to exit (SPEC F9.7).</summary>
+    private static void WaitForPreviousProcess(int? processId)
+    {
+        if (processId is not { } pid)
+        {
+            return;
+        }
+
+        try
+        {
+            using var process = Process.GetProcessById(pid);
+            process.WaitForExit(PreviousInstanceTimeout);
+        }
+        catch (ArgumentException)
+        {
+            // Already exited.
+        }
+        catch (InvalidOperationException)
+        {
+            // Already exited.
+        }
     }
 
     /// <summary>settings.ini next to the exe (portable), or in %APPDATA% when that folder is read-only.</summary>

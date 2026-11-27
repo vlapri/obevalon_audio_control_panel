@@ -56,6 +56,12 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private string? _infoMessage;
 
+    /// <summary>Display name of the current default output (for the tray tooltip).</summary>
+    [ObservableProperty]
+    private string? _currentOutputName;
+
+    private IReadOnlyList<OutputEntry> _lastEntries = [];
+
     public void Dispose()
     {
         _audio.DevicesChanged -= OnDevicesChanged;
@@ -98,6 +104,9 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     }
 
     internal void SwitchTo(OutputDeviceViewModel output) => SwitchTo(output.Id);
+
+    /// <summary>Switches the default output (used by the tray menu).</summary>
+    public void SwitchToOutput(string deviceId) => SwitchTo(deviceId);
 
     internal void Move(OutputDeviceViewModel output, int offset)
     {
@@ -185,7 +194,9 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     {
         try
         {
-            var visible = MergeOutputs()
+            _lastEntries = MergeOutputs();
+            CurrentOutputName = _lastEntries.FirstOrDefault(e => e.IsDefault)?.DisplayName;
+            var visible = _lastEntries
                 .Where(e => !e.Hidden || _settings.Current.ShowHiddenDevices)
                 .ToList();
 
@@ -237,6 +248,9 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         {
             output.IsDefault = string.Equals(output.Id, e.DeviceId, StringComparison.OrdinalIgnoreCase);
         }
+
+        CurrentOutputName = _lastEntries
+            .FirstOrDefault(o => string.Equals(o.Id, e.DeviceId, StringComparison.OrdinalIgnoreCase))?.DisplayName;
     }
 
     private void ReportError(string messageKey, Exception ex) =>
