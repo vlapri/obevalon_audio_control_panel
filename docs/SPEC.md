@@ -450,7 +450,7 @@ obevalon_audio_control_panel/
 │     │  ├─ AudioDeviceService.cs
 │     │  └─ MicrophoneService.cs
 │     ├─ Autostart/RegistryAutostartService.cs
-│     ├─ Hotkeys/Win32HotkeyService.cs
+│     ├─ Hotkeys/GlobalHotkeys.cs                # RegisterHotKey / UnregisterHotKey (okno a WM_HOTKEY: App/Hotkeys/HotkeyManager)
 │     ├─ Updates/                              # ExeSwapUpdateInstaller, DotNetRuntimeProbe
 │     ├─ Shell/                                # SingleInstance, SystemMetrics, SystemThemeProvider, ...
 │     └─ Native/                               # P/Invoke (user32, dwmapi)
@@ -550,7 +550,7 @@ Stav: ✅ = hotovo, 🧪 = implementováno, čeká na ověření na reálném HW
 | **M4 – Systray a životní cyklus** 🧪 | Ikona, tooltip, levý/pravý klik, kontextové menu, ikona mute, minimalizace/zavření do tray, `--tray`, jediná instance | Aplikace žije v systray |
 | **M5 – Autostart** 🧪 | Registr HKCU Run, StartupApproved, kontrola a oprava cesty | Autostart bez UAC |
 | **M6 – Lokalizace a motivy** 🧪 | resx CZ/EN, autodetekce + přepnutí za běhu, Light/Dark + auto, tmavý titulek, okno Nastavení | Dvojjazyčná aplikace s motivy |
-| **M7 – Klávesové zkratky** | `Win32HotkeyService`, ovládací prvek pro zachycení zkratky, hlášení konfliktů | Globální zkratky |
+| **M7 – Klávesové zkratky** 🧪 | `Win32HotkeyService`, ovládací prvek pro zachycení zkratky, hlášení konfliktů | Globální zkratky |
 | **M8 – Aktualizace** | Podpisový klíč, `make-update-manifest.ps1`, rozšíření `release.yml`, `UpdateChecker` / `Downloader` / `Scheduler` + testy, `ExeSwapUpdateInstaller`, `DotNetRuntimeProbe`, oznamovací okno, položka v tray, `docs/RELEASING.md` | Ověřeno ostrou aktualizací `v0.8.0` → `v0.8.1` |
 | **M9 – Dokončení** | O aplikaci, finální ikony, OSD oznámení, logování, ošetření chyb, migrace INI, `docs/TESTING.md` | Release candidate |
 | **M10 – Vydání 1.0** | Zveřejnit repozitář, projít manuální checklist (Win11 + Win10), README se screenshoty, `v1.0.0` | Veřejné vydání |

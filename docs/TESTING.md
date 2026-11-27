@@ -104,3 +104,14 @@ Pro přehrávání zvuku během testu stačí třeba video na YouTube.
 - [ ] „Zavřením okna aplikaci ukončit“ → křížek aplikaci ukončí; vypnuté → schová do systray.
 - [ ] Všechny volby se uloží do `settings.ini` a platí po restartu.
 - [ ] (Windows 10) Vzhled je v pořádku i bez efektu Mica.
+
+## M7 – Klávesové zkratky
+- [ ] Ve výchozím stavu není přiřazená žádná zkratka.
+- [ ] V Nastavení: klik do pole a stisk např. `Ctrl+Alt+A` zapíše zkratku; Backspace nebo křížek ji smaže; samotný Shift+písmeno nebo samotné písmeno se nepřijme.
+- [ ] Po zavření Nastavení fungují zkratky v celých Windows (i když je okno aplikace schované):
+  - „Další výstup“ přepne výstup,
+  - „Ztlumit / zapnout mikrofon“ přepne mikrofon (změní se i ikona v systray),
+  - „Zobrazit okno“ zobrazí hlavní okno.
+- [ ] Stejnou zkratku nejde přiřadit dvěma akcím (zobrazí se chyba).
+- [ ] Zkratka používaná jinou aplikací (nebo Windows, např. `Win+L`) zobrazí upozornění „Tuto zkratku používá jiná aplikace nebo Windows“.
+- [ ] Zkratky platí i po restartu (uloženo v `[Hotkeys]` v `settings.ini`).
