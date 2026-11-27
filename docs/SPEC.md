@@ -36,6 +36,7 @@ klávesovými zkratkami.
 | D16 | Výstupní soubor | `OACP.exe` |
 | D17 | Licence v hlavičkách | `// SPDX-License-Identifier: GPL-3.0-or-later` |
 | D18 | Ikona | Vlastní návrh: reproduktor se zvukovými vlnami a šipkami přepnutí, varianta pro ztlumený mikrofon do systray. Zdroj je SVG v `src/Obevalon.AudioControlPanel/Assets/`. |
+| D19 | Podepisování exe | Authenticode podpis přes **SignPath** s certifikátem **SignPath Foundation** (zdarma pro open source), v release workflow; každé vydání schvaluje autor v SignPath. Nutné kvůli Inteligentnímu řízení aplikací ve Windows 11, které nepodepsané programy blokuje. |
 
 ## 3. Funkční specifikace
 
@@ -403,8 +404,8 @@ Kontrola ──► stáhni update.json + .sig ──► ověř podpis ──► 
 - Aplikace, kterým uživatel ve Windows 11 nastavil vlastní výstup (*Nastavení → Zvuk →
   Směšovač hlasitosti*), přepnutí výchozího zařízení nenásledují. To je chování Windows.
 - ID zařízení se může změnit po přeinstalaci ovladače nebo výměně GPU → řeší F1.8.
-- Nepodepsaný exe → varování SmartScreen při prvním spuštění. Později lze řešit
-  bezplatným podepisováním pro open source (SignPath Foundation). Exe stažený samotnou
+- Nepodepsaný exe → Windows 11 s Inteligentním řízením aplikací ho úplně zablokuje, jinak varování
+  SmartScreen. Řeší D19 (SignPath Foundation); do schválení žádosti jsou vydání nepodepsaná. Exe stažený samotnou
   aplikací (aktualizace) nedostane značku „staženo z internetu“ (Mark of the Web), takže
   po aktualizaci se varování neopakuje.
 - Ztráta privátního podpisového klíče = konec automatických aktualizací pro stávající
@@ -497,7 +498,9 @@ Výstupní soubor: **`OACP.exe`** (zkratka Obevalon Audio Control Panel). Název
   - `OACP-<verze>-<rid>.exe` – samotný exe pro x64 i ARM64 (stahuje ho aktualizace),
   - `SHA256SUMS.txt`,
   - `update.json` + `update.json.sig` – manifest aktualizace a jeho podpis (kap. 5.5).
-- Podpis vytvoří skript `build/make-update-manifest.ps1` s klíčem ze secretu
+- Exe se před zabalením podepíší přes SignPath (D19, `docs/RELEASING.md`), `update.json` se počítá
+  z podepsaných souborů.
+- Podpis manifestu vytvoří skript `build/make-update-manifest.ps1` s klíčem ze secretu
   `UPDATE_SIGNING_KEY`. **Pokud secret chybí, workflow selže** – nesmí vzniknout vydání
   bez podepsaného manifestu.
 - Tagy s pre-release příponou (`v1.1.0-beta.1`) se vydají jako *pre-release*. Automatická

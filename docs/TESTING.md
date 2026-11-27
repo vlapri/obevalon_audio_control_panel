@@ -143,3 +143,8 @@ Předpoklad: secret `UPDATE_SIGNING_KEY` je nastavený a existují dvě vydání
 - [ ] Projít sekce M1–M9 na Windows 11 (x64), hlavní body na Windows 10 22H2.
 - [ ] Dlouhodobý běh: aplikace běží celý den v systray, přepínání a zkratky stále fungují, paměť nenarůstá.
 - [ ] Přepínání při vypnutém/zapnutém projektoru, uspání a probuzení PC, odpojení USB/Bluetooth zařízení.
+
+## Podepisování (D19)
+- [ ] Vlastnosti `OACP.exe` → *Digitální podpisy*: podpis „SignPath Foundation“, stav platný.
+- [ ] Se zapnutým Inteligentním řízením aplikací se podepsané `OACP.exe` spustí.
+- [ ] Automatická aktualizace na podepsanou verzi proběhne i se zapnutým Inteligentním řízením aplikací.

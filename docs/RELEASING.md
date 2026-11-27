@@ -26,6 +26,39 @@ Verze se řídí [SemVer](https://semver.org/lang/cs/) a bere se **pouze z git t
 
 Tagy s příponou (např. `v1.3.0-beta.1`) se vydají jako **pre-release**.
 
+## Podepisování exe (SignPath)
+
+Windows 11 s **Inteligentním řízením aplikací** (Smart App Control) nepodepsané programy úplně blokuje.
+Exe se proto podepisují certifikátem **SignPath Foundation** (zdarma pro open source) přes službu SignPath.io.
+Workflow *Release* podepisuje automaticky, jakmile je nastavená proměnná `SIGNPATH_ORGANIZATION_ID`;
+bez ní vydání proběhne nepodepsaně (s varováním v logu).
+
+### Jednorázové nastavení (po schválení žádosti SignPath Foundation)
+1. V SignPath (app.signpath.io) zkontrolujte projekt, který Foundation pro repozitář založila, a jeho
+   **slug** (např. `obevalon_audio_control_panel`).
+2. **Artifact configuration**: vložte obsah `.signpath/artifact-configuration.xml` (podepisuje oba exe
+   v artefaktu `unsigned-executables`) a poznamenejte si její slug (nebo ji nastavte jako výchozí).
+3. **Signing policy**: použijte politiku pro vydání (typicky `release-signing`) navázanou na tento
+   repozitář přes *Trusted build system* GitHub.com.
+4. Vytvořte **API token** (uživatel s rolí *Submitter* v projektu).
+5. GitHub → *Settings → Secrets and variables → Actions*:
+   - secret `SIGNPATH_API_TOKEN` = API token,
+   - variables:
+     - `SIGNPATH_ORGANIZATION_ID` = ID organizace (GUID z URL v SignPath),
+     - `SIGNPATH_PROJECT_SLUG` = slug projektu,
+     - `SIGNPATH_SIGNING_POLICY_SLUG` = slug politiky (výchozí `release-signing`),
+     - `SIGNPATH_ARTIFACT_CONFIGURATION_SLUG` = slug konfigurace artefaktu (nepovinné, jinak výchozí).
+
+### Průběh vydání s podpisem
+1. Workflow sestaví nepodepsaná exe a nahraje je jako artefakt `unsigned-executables`.
+2. Odešle žádost o podpis do SignPath a **čeká až 60 minut** na dokončení.
+3. **Schválení**: žádost o podpis vydání schvaluje *Approver* ručně v SignPath (e-mail / app.signpath.io).
+4. Podepsaná exe workflow ověří (`Get-AuthenticodeSignature` musí být `Valid`), zabalí je do zip,
+   spočítá z nich `update.json` (SHA-256 podepsaných souborů) a vytvoří vydání.
+
+Pravidla SignPath Foundation vyžadují v README sekci o podepisování a zásady ochrany soukromí
+(viz README → *Code signing policy*, *Privacy policy*). Při změně týmu je aktualizujte.
+
 ## Podpisový klíč pro aktualizace
 
 Aplikace instaluje jen aktualizace, jejichž `update.json` je podepsaný klíčem ECDSA P-256.

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  SignPath artifact configuration for Obevalon Audio Control Panel.
+  Copy this into the SignPath project (Artifact configurations → this configuration).
+  The GitHub artifact "unsigned-executables" is a zip with OACP-<version>-win-x64.exe and
+  OACP-<version>-win-arm64.exe at its root; both get an Authenticode signature.
+-->
+<artifact-configuration xmlns="http://signpath.io/artifact-configuration/v1">
+  <zip-file>
+    <pe-file-set>
+      <include path="OACP-*-win-x64.exe" />
+      <include path="OACP-*-win-arm64.exe" />
+      <for-each>
+        <authenticode-sign />
+      </for-each>
+    </pe-file-set>
+  </zip-file>
+</artifact-configuration>
