@@ -15,6 +15,8 @@ Verze se řídí [SemVer](https://semver.org/lang/cs/) a bere se **pouze z git t
    ```bash
    git push origin v1.2.3
    ```
+   Nebo bez gitu: GitHub → *Actions → Release → Run workflow*, větev `main`, verze `1.2.3`.
+   Workflow tag `v1.2.3` vytvoří sám (pokud už existuje, skončí chybou).
 4. Workflow *Release* (`.github/workflows/release.yml`):
    - spustí testy,
    - sestaví `OACP.exe` pro `win-x64` a `win-arm64` s verzí z tagu,
