@@ -1,0 +1,51 @@
+<Window x:Class="Obevalon.AudioControlPanel.Views.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:loc="clr-namespace:Obevalon.AudioControlPanel.Localization"
+        xmlns:vm="clr-namespace:Obevalon.AudioControlPanel.ViewModels"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=vm:SettingsViewModel}"
+        Title="{loc:Loc Settings_Title}"
+        Icon="/Assets/app.ico"
+        Width="440"
+        SizeToContent="Height"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner"
+        UseLayoutRounding="True">
+  <StackPanel x:Name="Root" Margin="16">
+
+    <!-- Startup -->
+    <TextBlock Style="{StaticResource SectionHeader}" Margin="0,0,0,6" Text="{loc:Loc Settings_StartupHeader}" />
+    <CheckBox IsChecked="{Binding AutostartEnabled}" Content="{loc:Loc Settings_Autostart}" />
+    <TextBlock Margin="22,4,0,0" TextWrapping="Wrap" Style="{StaticResource SecondaryText}"
+               Text="{loc:Loc Settings_AutostartDisabledBySystem}"
+               Visibility="{Binding AutostartDisabledBySystem, Converter={StaticResource BoolToVisibility}}" />
+    <StackPanel Margin="22,4,0,0" Orientation="Horizontal"
+                Visibility="{Binding AutostartNeedsRepair, Converter={StaticResource BoolToVisibility}}">
+      <TextBlock VerticalAlignment="Center" Foreground="#D97706" Text="{loc:Loc Settings_AutostartWrongPath}" />
+      <Button Margin="8,0,0,0" Style="{StaticResource TextButton}" Content="{loc:Loc Settings_AutostartRepair}"
+              Command="{Binding RepairAutostartCommand}" />
+    </StackPanel>
+
+    <!-- Settings file -->
+    <TextBlock Style="{StaticResource SectionHeader}" Text="{loc:Loc Settings_FileHeader}" />
+    <TextBox IsReadOnly="True" BorderThickness="0" Background="Transparent" TextWrapping="Wrap"
+             Text="{Binding SettingsPath, Mode=OneWay}" />
+    <TextBlock Margin="0,4,0,0" TextWrapping="Wrap" Style="{StaticResource SecondaryText}" Text="{loc:Loc Settings_Portable}"
+               Visibility="{Binding IsPortable, Converter={StaticResource BoolToVisibility}}" />
+    <TextBlock Margin="0,4,0,0" TextWrapping="Wrap" Style="{StaticResource SecondaryText}" Text="{loc:Loc Settings_NotPortable}"
+               Visibility="{Binding IsPortable, Converter={StaticResource InverseBoolToVisibility}}" />
+    <Button Margin="0,8,0,0" HorizontalAlignment="Left" Style="{StaticResource TextButton}"
+            Content="{loc:Loc Settings_OpenFolder}" Command="{Binding OpenSettingsFolderCommand}" />
+
+    <!-- Error -->
+    <TextBlock Text="{Binding ErrorMessage}" Foreground="#E5484D" TextWrapping="Wrap" Margin="0,12,0,0"
+               Visibility="{Binding ErrorMessage, Converter={StaticResource NullToCollapsed}}" />
+
+    <Button Margin="0,16,0,0" HorizontalAlignment="Right" Style="{StaticResource TextButton}" IsCancel="True"
+            Content="{loc:Loc Common_Close}" Click="OnCloseClick" />
+  </StackPanel>
+</Window>

@@ -155,4 +155,48 @@
   <data name="Tray_ToolTipMicNone" xml:space="preserve">
     <value>Mikrofon: nenalezen</value>
   </data>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>Nastavení</value>
+  </data>
+  <data name="Settings_StartupHeader" xml:space="preserve">
+    <value>Spuštění</value>
+  </data>
+  <data name="Settings_Autostart" xml:space="preserve">
+    <value>Spouštět po přihlášení (do systray)</value>
+  </data>
+  <data name="Settings_AutostartDisabledBySystem" xml:space="preserve">
+    <value>Automatické spouštění je vypnuté ve Windows (Správce úloh → Aplikace po spuštění). Vypnutím a zapnutím zde ho znovu povolíte.</value>
+  </data>
+  <data name="Settings_AutostartWrongPath" xml:space="preserve">
+    <value>Automatické spouštění ukazuje na jiné umístění aplikace.</value>
+  </data>
+  <data name="Settings_AutostartRepair" xml:space="preserve">
+    <value>Opravit</value>
+  </data>
+  <data name="Settings_FileHeader" xml:space="preserve">
+    <value>Soubor nastavení</value>
+  </data>
+  <data name="Settings_Portable" xml:space="preserve">
+    <value>Portable režim: nastavení se ukládá vedle aplikace.</value>
+  </data>
+  <data name="Settings_NotPortable" xml:space="preserve">
+    <value>Do složky aplikace nelze zapisovat, nastavení se proto ukládá do vašeho uživatelského profilu.</value>
+  </data>
+  <data name="Settings_OpenFolder" xml:space="preserve">
+    <value>Otevřít složku</value>
+  </data>
+  <data name="Common_Close" xml:space="preserve">
+    <value>Zavřít</value>
+  </data>
+  <data name="Tray_Settings" xml:space="preserve">
+    <value>Nastavení…</value>
+  </data>
+  <data name="Autostart_RepairPrompt" xml:space="preserve">
+    <value>Automatické spouštění je nastavené pro jiné umístění aplikace (složka byla pravděpodobně přesunuta).
+
+Nastavit ho na aktuální umístění?</value>
+  </data>
+  <data name="Error_AutostartFailed" xml:space="preserve">
+    <value>Automatické spouštění se nepodařilo změnit: {0}</value>
+  </data>
 </root>
